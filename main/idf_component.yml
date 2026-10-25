@@ -18,7 +18,7 @@ dependencies:
     version: "v0.3.0"
   feckless_graphics_handler:
     git: https://github.com/Sudrien/feckless-graphics-handler-for-m5tab5.git
-    version: "v0.1.0"
+    version: "v0.2.4"
   feckless_storage_handler:
     git: https://github.com/Sudrien/feckless-storage-handler-for-m5tab5.git
     version: "v0.1.0"
@@ -27,7 +27,7 @@ dependencies:
   # its idf_component.yml says why each is pinned or not.
   feckless_network_handler:
     git: https://github.com/Sudrien/feckless-network-handler-for-m5tab5.git
-    version: "v0.2.0"
+    version: "v0.2.1"
 
   # Class drivers the two libraries require by name and do not fetch (the
   # player vendors fixed copies of both). Mass storage is used here, for
