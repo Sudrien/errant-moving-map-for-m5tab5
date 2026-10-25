@@ -54,6 +54,11 @@ extern "C" {
 /* src: original/wifiloc.cpp WIFILOC_MIN_RSSI: below about -88 dBm the
  * reading is mostly noise. */
 #define WIFILOC_MIN_RSSI        (-88)
+/* Chosen (0038), not the original's, which folded in every AP heard: a
+ * learning scan folds in only its ten strongest routers. The weak tail
+ * says least about where the device stood and is most of what fills the
+ * table in a crowd; ten is over WIFILOC_MIN_APS three times. */
+#define WIFILOC_LEARN_APS       (10)
 /* src: original/wifiloc.cpp locate()'s hit[32]. */
 #define WIFILOC_HITS            (32)
 
@@ -84,7 +89,7 @@ typedef struct {
 
 /* src: original/wifiloc.cpp ApRec, 48 bytes. */
 typedef struct {
-    uint64_t id;                /* the BSSID, big-endian in the low 48 bits */
+    uint64_t id;                /* BSSID bytes 2-5, big-endian in the low 32 bits */
     uint32_t n;                 /* observations */
     double   sum_lat, sum_lon;  /* running sums; the centroid is sum / n */
     float    min_lat, max_lat;  /* extent, for the mobility test */
@@ -103,8 +108,9 @@ typedef struct {
 void wifiloc_init(wifiloc_db_t *db, wifiloc_rec_t *tab, uint32_t cap);
 
 /*
- * Fold a scan heard at (lat, lon) into the table: new records for new
- * access points while there is room, and a record heard over more than
+ * Fold a scan heard at (lat, lon) into the table, a router at a time --
+ * its networks one record, at the strongest heard -- and only the
+ * WIFILOC_LEARN_APS strongest routers: new records while there is room, and a record heard over more than
  * WIFILOC_MOBILE_M after WIFILOC_MIN_OBS judged mobile, for good -- one
  * that flipped back would contribute the very observations that proved it
  * mobile. Counts in *added, *folded, *mobile.
@@ -120,7 +126,8 @@ typedef struct {
 
 /*
  * An estimate from a scan: the received-power-weighted mean of the known,
- * fixed, well-observed access points heard, at most WIFILOC_HITS. False,
+ * fixed, well-observed routers heard, each once at its strongest network,
+ * at most WIFILOC_HITS. False,
  * with est->used set, under WIFILOC_MIN_APS.
  */
 bool wifiloc_locate(const wifiloc_db_t *db, const wifiloc_ap_t *aps, int n,
@@ -130,16 +137,20 @@ bool wifiloc_locate(const wifiloc_db_t *db, const wifiloc_ap_t *aps, int n,
  *
  * src: original/wifiloc.h THE FILE: CSV, a header line, then a row per
  * access point -- bssid,obs,lat,lon,min_lat,max_lat,min_lon,max_lon,
- * best_rssi,mobile -- with the centroid, not the sums. The BSSIDs as
- * heard: everything on the card is a record of where the device has
- * been, and hashing one file of it protected nothing. */
+ * best_rssi,mobile -- with the centroid, not the sums. Since 0038 the
+ * first field is the key, bytes 2-5 of the BSSID, under a header that
+ * starts "key,", which the original will not read; the original's file,
+ * whole BSSIDs under "bssid,", is still read, its rows for one router
+ * merged. Not hashed: everything on the card is a record of where the
+ * device has been, and hashing one file of it protected nothing. */
 extern const char WIFILOC_HEADER[];
 
-/* Is `line` the header? */
+/* Is `line` the header, this one or the original's? */
 bool wifiloc_header_ok(const char *line);
 
-/* Add the record in `line`; false for a row that is not one, which is
- * skipped rather than ending the load. */
+/* Add the record in `line`, or merge it into its router's; false for a
+ * row that is not one, which is skipped rather than ending the load, or
+ * a new router with the table full. */
 bool wifiloc_parse(wifiloc_db_t *db, const char *line);
 
 /* Record `i` as a row, no newline; its length, or -1 if `cap` is short. */

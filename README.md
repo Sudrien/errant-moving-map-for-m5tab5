@@ -114,8 +114,11 @@ and the tile cache in `.aimless.tiles/`. None
 ends in `.bin`, which M5Launcher would list as firmware to install. The
 original's `waypoints.bin`, `lastfix.bin`, `aopdb.bin`, `wifiloc.csv` and `t/` are renamed to these
 the first time they are read, so their contents carry over.
-`.aimless.wifiloc.csv` lists the access points heard and where: like
-the rest, a record of where the device has been.
+`.aimless.wifiloc.csv` lists the routers heard and where: like
+the rest, a record of where the device has been. Each is keyed by
+bytes 2-5 of its BSSID, so a router's guest and second-band networks
+are one entry; the original's file is read and its rows merged, but
+once written back the original firmware will not read it.
 
 ## On the screen
 

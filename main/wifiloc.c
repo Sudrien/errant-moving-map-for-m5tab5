@@ -16,6 +16,9 @@
 #endif
 
 const char WIFILOC_HEADER[] =
+    "key,obs,lat,lon,min_lat,max_lat,min_lon,max_lon,best_rssi,mobile";
+/* The original's, keyed by the whole BSSID: still read, and merged. */
+static const char WIFILOC_HEADER_BSSID[] =
     "bssid,obs,lat,lon,min_lat,max_lat,min_lon,max_lon,best_rssi,mobile";
 
 void wifiloc_init(wifiloc_db_t *db, wifiloc_rec_t *tab, uint32_t cap)
@@ -27,17 +30,60 @@ void wifiloc_init(wifiloc_db_t *db, wifiloc_rec_t *tab, uint32_t cap)
     if (tab) memset(tab, 0, (size_t)cap * sizeof(*tab));
 }
 
-static uint64_t pack(const uint8_t *b)
+/* Bytes 2-5 of the six, big-endian: the router, not the network. A
+ * router's guest, mesh and second-band networks differ in the last byte
+ * (b4:20:46:40:06:e4 / e8) or in the first (96:76:3f:4d:af:df /
+ * 9a:76:3f:4d:af:df), and are one place. Departs from the original, which
+ * kept all six (0038). */
+static uint64_t key(const uint8_t *b)
 {
     uint64_t v = 0;
-    for (int i = 0; i < 6; i++) v = (v << 8) | b[i];
+    for (int i = 1; i < 5; i++) v = (v << 8) | b[i];
     return v;
+}
+
+/* Whether aps[i] stands for its router in this scan: heard well enough,
+ * and no other network of the same router heard stronger (the earlier
+ * of two equal). One router counts once a scan, at its best. */
+static bool rep(const wifiloc_ap_t *aps, int n, int i)
+{
+    if (aps[i].rssi < WIFILOC_MIN_RSSI) return false;
+    const uint64_t k = key(aps[i].bssid);
+    for (int j = 0; j < n; j++) {
+        if (j == i || aps[j].rssi < WIFILOC_MIN_RSSI || key(aps[j].bssid) != k) continue;
+        if (aps[j].rssi > aps[i].rssi || (aps[j].rssi == aps[i].rssi && j < i)) return false;
+    }
+    return true;
+}
+
+/* Of the routers in a scan, aps[i]'s place by strength: 0 the strongest,
+ * the earlier of two equal first. */
+static int rank(const wifiloc_ap_t *aps, int n, int i)
+{
+    int r = 0;
+    for (int j = 0; j < n; j++) {
+        if (j == i || !rep(aps, n, j)) continue;
+        if (aps[j].rssi > aps[i].rssi || (aps[j].rssi == aps[i].rssi && j < i)) r++;
+    }
+    return r;
 }
 
 /* src: original/wifiloc.cpp lat_m(), lon_m(): 111320 m a degree, for
  * threshold comparisons, not a projection. */
 static double lat_m(double dlat) { return dlat * 111320.0; }
 static double lon_m(double dlon, double at_lat) { return dlon * 111320.0 * cos(at_lat * M_PI / 180.0); }
+
+/* Judge a record mobile, for good, if heard over more than
+ * WIFILOC_MOBILE_M after WIFILOC_MIN_OBS; true if it is newly so. */
+static bool judge(wifiloc_rec_t *r, double at_lat)
+{
+    if (r->mobile || r->n < WIFILOC_MIN_OBS) return false;
+    const double dx = lon_m((double)r->max_lon - (double)r->min_lon, at_lat);
+    const double dy = lat_m((double)r->max_lat - (double)r->min_lat);
+    if (sqrt(dx * dx + dy * dy) <= WIFILOC_MOBILE_M) return false;
+    r->mobile = 1;
+    return true;
+}
 
 static wifiloc_rec_t *find(const wifiloc_db_t *db, uint64_t id)
 {
@@ -51,8 +97,8 @@ void wifiloc_learn(wifiloc_db_t *db, const wifiloc_ap_t *aps, int n,
 {
     int a = 0, f = 0, m = 0;
     for (int i = 0; i < n; i++) {
-        if (aps[i].rssi < WIFILOC_MIN_RSSI) continue;
-        const uint64_t id = pack(aps[i].bssid);
+        if (!rep(aps, n, i) || rank(aps, n, i) >= WIFILOC_LEARN_APS) continue;
+        const uint64_t id = key(aps[i].bssid);
         wifiloc_rec_t *r = find(db, id);
         if (!r) {
             if (db->count >= db->cap) continue;     /* full: keep what is known */
@@ -74,14 +120,7 @@ void wifiloc_learn(wifiloc_db_t *db, const wifiloc_ap_t *aps, int n,
         if ((float)lon < r->min_lon) r->min_lon = (float)lon;
         if ((float)lon > r->max_lon) r->max_lon = (float)lon;
         if (aps[i].rssi > r->best_rssi) r->best_rssi = aps[i].rssi;
-        if (!r->mobile && r->n >= WIFILOC_MIN_OBS) {
-            const double dx = lon_m((double)r->max_lon - (double)r->min_lon, lat);
-            const double dy = lat_m((double)r->max_lat - (double)r->min_lat);
-            if (sqrt(dx * dx + dy * dy) > WIFILOC_MOBILE_M) {
-                r->mobile = 1;
-                m++;
-            }
-        }
+        if (judge(r, lat)) m++;
         db->dirty++;
     }
     if (added) *added = a;
@@ -96,8 +135,8 @@ bool wifiloc_locate(const wifiloc_db_t *db, const wifiloc_ap_t *aps, int n,
     int hits = 0;
     double wsum = 0, wlat = 0, wlon = 0;
     for (int i = 0; i < n && hits < WIFILOC_HITS; i++) {
-        if (aps[i].rssi < WIFILOC_MIN_RSSI) continue;
-        const wifiloc_rec_t *r = find(db, pack(aps[i].bssid));
+        if (!rep(aps, n, i)) continue;
+        const wifiloc_rec_t *r = find(db, key(aps[i].bssid));
         if (!r || r->mobile || r->n < WIFILOC_MIN_OBS) continue;
         /* Received power, linear: 10 dB stronger counts ten times. The
          * whole of the weighting model. */
@@ -130,18 +169,22 @@ bool wifiloc_locate(const wifiloc_db_t *db, const wifiloc_ap_t *aps, int n,
 
 bool wifiloc_header_ok(const char *line)
 {
-    return line && strncmp(line, WIFILOC_HEADER, strlen(WIFILOC_HEADER)) == 0;
+    return line && (strncmp(line, WIFILOC_HEADER, strlen(WIFILOC_HEADER)) == 0 ||
+                    strncmp(line, WIFILOC_HEADER_BSSID, strlen(WIFILOC_HEADER_BSSID)) == 0);
 }
 
 bool wifiloc_parse(wifiloc_db_t *db, const char *line)
 {
-    if (db->count >= db->cap) return false;
-    unsigned b[6];
+    unsigned b[6] = { 0 };
     unsigned long obs;
     double lat, lon, mnla, mxla, mnlo, mxlo;
     int rssi, mob;
-    /* All fifteen fields, or it is not a record. */
-    if (sscanf(line, "%2x:%2x:%2x:%2x:%2x:%2x,%lu,%lf,%lf,%lf,%lf,%lf,%lf,%d,%d",
+    /* All the fields, or it is not a record: a key of four bytes, or the
+     * original's whole BSSID of six, whose router is bytes 2-5. */
+    if (sscanf(line, "%2x:%2x:%2x:%2x,%lu,%lf,%lf,%lf,%lf,%lf,%lf,%d,%d",
+               &b[1], &b[2], &b[3], &b[4], &obs,
+               &lat, &lon, &mnla, &mxla, &mnlo, &mxlo, &rssi, &mob) != 13 &&
+        sscanf(line, "%2x:%2x:%2x:%2x:%2x:%2x,%lu,%lf,%lf,%lf,%lf,%lf,%lf,%d,%d",
                &b[0], &b[1], &b[2], &b[3], &b[4], &b[5], &obs,
                &lat, &lon, &mnla, &mxla, &mnlo, &mxlo, &rssi, &mob) != 15)
         return false;
@@ -150,9 +193,31 @@ bool wifiloc_parse(wifiloc_db_t *db, const char *line)
         return false;
     uint8_t addr[6];
     for (int i = 0; i < 6; i++) addr[i] = (uint8_t)b[i];
-    wifiloc_rec_t *r = &db->tab[db->count++];
+    const uint64_t id = key(addr);
+    const int8_t best = (int8_t)(rssi < -128 ? -128 : rssi > 127 ? 127 : rssi);
+
+    /* A second row for the same router -- the original's file, a network
+     * each -- is merged: the sums added, the extents joined, the best
+     * kept, mobile if either was or the two together are. */
+    wifiloc_rec_t *r = find(db, id);
+    if (r) {
+        if (r->n > UINT32_MAX - obs) return false;
+        r->n += (uint32_t)obs;
+        r->sum_lat += lat * (double)obs;
+        r->sum_lon += lon * (double)obs;
+        if ((float)mnla < r->min_lat) r->min_lat = (float)mnla;
+        if ((float)mxla > r->max_lat) r->max_lat = (float)mxla;
+        if ((float)mnlo < r->min_lon) r->min_lon = (float)mnlo;
+        if ((float)mxlo > r->max_lon) r->max_lon = (float)mxlo;
+        if (best > r->best_rssi) r->best_rssi = best;
+        if (mob) r->mobile = 1;
+        judge(r, r->sum_lat / r->n);
+        return true;
+    }
+    if (db->count >= db->cap) return false;
+    r = &db->tab[db->count++];
     memset(r, 0, sizeof(*r));
-    r->id = pack(addr);
+    r->id = id;
     r->n = (uint32_t)obs;
     /* The file has the mean; the arithmetic wants the sum. */
     r->sum_lat = lat * (double)obs;
@@ -161,7 +226,7 @@ bool wifiloc_parse(wifiloc_db_t *db, const char *line)
     r->max_lat = (float)mxla;
     r->min_lon = (float)mnlo;
     r->max_lon = (float)mxlo;
-    r->best_rssi = (int8_t)(rssi < -128 ? -128 : rssi > 127 ? 127 : rssi);
+    r->best_rssi = best;
     r->mobile = mob ? 1 : 0;
     return true;
 }
@@ -170,14 +235,14 @@ int wifiloc_format(const wifiloc_db_t *db, uint32_t i, char *out, size_t cap)
 {
     if (i >= db->count || !db->tab[i].n) return -1;
     const wifiloc_rec_t *r = &db->tab[i];
-    uint8_t b[6];
+    uint8_t b[4];
     uint64_t v = r->id;
-    for (int k = 5; k >= 0; k--) { b[k] = (uint8_t)(v & 0xFF); v >>= 8; }
+    for (int k = 3; k >= 0; k--) { b[k] = (uint8_t)(v & 0xFF); v >>= 8; }
     /* Seven places, about a centimetre: so a round trip changes nothing a
      * later fold would notice, not because it is known that well. */
-    const int k = snprintf(out, cap, "%02x:%02x:%02x:%02x:%02x:%02x,%lu,"
+    const int k = snprintf(out, cap, "%02x:%02x:%02x:%02x,%lu,"
                                      "%.7f,%.7f,%.7f,%.7f,%.7f,%.7f,%d,%d",
-                           b[0], b[1], b[2], b[3], b[4], b[5], (unsigned long)r->n,
+                           b[0], b[1], b[2], b[3], (unsigned long)r->n,
                            r->sum_lat / r->n, r->sum_lon / r->n,
                            (double)r->min_lat, (double)r->max_lat,
                            (double)r->min_lon, (double)r->max_lon,

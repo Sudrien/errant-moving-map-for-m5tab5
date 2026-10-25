@@ -1204,3 +1204,53 @@ copies. draw_about() and about_tap() were compiled on the host with
 for gfx -- which caught a `-Wformat-truncation` that would have failed
 the IDF build. aimless.c as a whole was not compiled, and none of it
 has been on the board.
+
+### 0038 -- Wi-Fi location, by router
+
+From a scan on the board: of 41 networks, 20 hidden, most of the
+hidden ones were a visible router's guest or mesh networks --
+b4:20:46:40:06:e4 and e8, 72:13:01:8d:64:e2, e6 and e7, and
+96:76:3f:4d:af:df with 9a:76:3f:4d:af:df. Each was a record of its own,
+and a router with three networks counted three times in an estimate's
+weighted mean. In a crowd they filled the table, which once full learns
+nothing new (wifiloc_learn()'s "full: keep what is known").
+
+**Keyed by bytes 2-5 of the BSSID.** Vendors mark a router's extra
+networks in the last byte or in the first (the locally administered bit
+and its neighbours: 0x96 and 0x9a differ in bits 2 and 3, so clearing
+only the low two would not have joined them), so both are dropped. 32
+bits for 16384 records. Two routers sharing a key are either near each
+other -- one place, harmless -- or far apart, and then heard over
+WIFILOC_MOBILE_M and judged mobile: a landmark lost, never a position
+between them. Vendors that mark a middle byte stay separate, as before.
+
+**A router once a scan**, at its strongest network, in learning and in
+locating: rep() picks it with no scratch, comparing the scan with
+itself, which at WIFILOC_SEEN 64 is nothing beside the scan's seconds.
+
+**Learning takes the ten strongest routers** (WIFILOC_LEARN_APS,
+chosen): the weak tail says least about where the device stood and is
+most of what fills the table. Locating still uses everything heard over
+WIFILOC_MIN_RSSI, up to WIFILOC_HITS.
+
+**The file.** Rows are key,obs,... with a four-byte key, under a header
+beginning "key,"; the original's "bssid," file is still read, and its
+rows for one router merged -- sums added, extents joined, the best
+signal kept, mobile if either row was or the two together are. A merge
+into a full table still succeeds; a new router does not. Once written
+back, the original firmware will not read the file, and the whole
+BSSIDs are gone. aimless.c is unchanged: it writes WIFILOC_HEADER and
+calls wifiloc_parse() a row at a time as before. Loading merges by
+find(), a linear search as learning's always was, so a full 16384-row
+file costs about 134 million comparisons once at boot.
+
+Departs from original/wifiloc.cpp in the key, the per-scan dedupe, the
+ten, and the file; the record layout and every other number are the
+original's.
+
+Host: wifiloctest (116 checks, 42 more), the new ones built on that
+scan's BSSIDs. wifiloc.c compiled on the host with -Wall -Wextra
+-Werror at -Og, -Os and -O2; not built for the P4 and not run on the
+board. On the board, a learning scan near those routers logs fewer
+"learned N new" than networks heard, and a card with the original's
+file loads with fewer access points than it has rows.
