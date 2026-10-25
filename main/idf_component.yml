@@ -15,10 +15,10 @@ dependencies:
   # would change underneath a build that worked.
   feckless_drivers:
     git: https://github.com/Sudrien/feckless-drivers-for-m5tab5.git
-    version: "v0.3.0"
+    version: "v0.5.9"
   feckless_graphics_handler:
     git: https://github.com/Sudrien/feckless-graphics-handler-for-m5tab5.git
-    version: "v0.2.4"
+    version: "v0.2.7"
   feckless_storage_handler:
     git: https://github.com/Sudrien/feckless-storage-handler-for-m5tab5.git
     version: "v0.1.0"
