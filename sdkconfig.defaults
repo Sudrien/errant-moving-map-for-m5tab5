@@ -66,3 +66,5 @@ CONFIG_EH_HOST_PORT_DMA_PREFER_SPIRAM=y
 # HTTPS to the tile host: IDF's certificate bundle. On by default; written
 # down because netremote.c attaches it.
 CONFIG_MBEDTLS_CERTIFICATE_BUNDLE=y
+CONFIG_MBEDTLS_HARDWARE_ECDSA_SIGN=n
+CONFIG_MBEDTLS_HARDWARE_ECDSA_VERIFY=n

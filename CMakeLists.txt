@@ -10,6 +10,7 @@ include(${CMAKE_CURRENT_LIST_DIR}/cmake/idfcopy.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/cmake/exfat.cmake)
 
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
+idf_build_set_property(MINIMAL_BUILD ON)
 project(aimless_moving_map_for_m5tab5)
 
 # libversions.h, the licences page's list (0037): generated from the lock,
