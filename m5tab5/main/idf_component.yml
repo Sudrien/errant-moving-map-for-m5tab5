@@ -17,26 +17,38 @@ dependencies:
   feckless_drivers:
     git: https://github.com/Sudrien/feckless-libs-for-m5tab5.git
     path: components/feckless_drivers
-    version: "v0.2.0"
+    version: "v0.3.0"
   feckless_graphics_handler:
     git: https://github.com/Sudrien/feckless-libs-for-m5tab5.git
     path: components/feckless_graphics_handler
-    version: "v0.2.0"
+    version: "v0.3.0"
   feckless_storage_handler:
     git: https://github.com/Sudrien/feckless-libs-for-m5tab5.git
     path: components/feckless_storage_handler
-    version: "v0.2.0"
+    version: "v0.3.0"
   # Wi-Fi through the C6, saved networks, USB Ethernet. Brings
   # esp_hosted, esp_wifi_remote, esp_usbh_asix and iot_usbh_ecm with it;
   # its idf_component.yml says why each is pinned or not.
   feckless_network_handler:
     git: https://github.com/Sudrien/feckless-libs-for-m5tab5.git
     path: components/feckless_network_handler
-    version: "v0.2.0"
+    version: "v0.3.0"
 
-  # The mass storage class driver, which feckless_storage_handler
-  # requires by name and does not fetch (the player vendors a fixed
-  # copy), for maps on a USB drive. usb_host_uac, which feckless_drivers
-  # links, is no longer here: since feckless-libs v0.2.0 the drivers'
-  # manifest pins 1.5.0.
-  espressif/usb_host_msc: "^1.1.0"
+  # 0041: from feckless-libs v0.3.0 as well -- fatfs, IDF's FatFs with
+  # exFAT (0018's cmake/exfat.cmake did that here); and the two USB class
+  # drivers the libraries require by name, with the Tab5's fixes:
+  # usb_host_msc for maps on a USB drive (the registry's ^1.1.0 was here),
+  # usb_host_uac because feckless_drivers links it (v0.2.0's drivers
+  # pinned the registry's).
+  fatfs:
+    git: https://github.com/Sudrien/feckless-libs-for-m5tab5.git
+    path: components/fatfs
+    version: "v0.3.0"
+  usb_host_msc:
+    git: https://github.com/Sudrien/feckless-libs-for-m5tab5.git
+    path: components/usb_host_msc
+    version: "v0.3.0"
+  usb_host_uac:
+    git: https://github.com/Sudrien/feckless-libs-for-m5tab5.git
+    path: components/usb_host_uac
+    version: "v0.3.0"

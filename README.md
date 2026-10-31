@@ -196,14 +196,12 @@ split a large area into bands with `original/plan-extracts.py`. On exFAT
 one file can be any size, including a whole planet build -- about 126 GB,
 so a card of 129 GB or more, since the filesystem needs room of its own.
 
-exFAT comes from a patched copy of ESP-IDF's FatFs that the first
-`idf.py build` makes in `m5tab5/components/fatfs` (`m5tab5/cmake/exfat.cmake`, from
-Defeatist). exFAT was a Microsoft patent family; Microsoft published the
+exFAT comes from feckless-libs' `fatfs` component, which patches the
+installed ESP-IDF's FatFs at configure time. exFAT was a Microsoft patent family; Microsoft published the
 specification in 2019 and committed it to the Open Invention Network's
 patent non-aggression pool. If that matters to you and you would rather
-not build it in, set `TAB5_NO_EXFAT` in the environment before the first
-configure, or run `./tools/enable_exfat.sh --revert` in `m5tab5/` to take it out
-again.
+not build it in, set `CONFIG_FECKLESS_FATFS_EXFAT=n` in
+`m5tab5/sdkconfig.defaults` and `rm sdkconfig`.
 
 ## Building
 

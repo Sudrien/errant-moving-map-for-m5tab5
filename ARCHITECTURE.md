@@ -1295,3 +1295,24 @@ manager off, against feckless-libs v0.2.0 (2edea9f) and the registry
 components' sources from GitHub: aimless_moving_map_for_m5tab5.bin
 0x1bef10 bytes. Not with 5.5.5, CI's default. `dependencies.lock` not
 updated. Not on a Tab5.
+
+### 0041 -- feckless-libs v0.3.0: exFAT and the class drivers from it
+
+feckless-libs v0.3.0 carries what was copied into each project. The
+manifest moves the four feckless components to v0.3.0 and names three
+more from it: fatfs, IDF's FatFs with exFAT patched at configure time,
+in place of cmake/exfat.cmake, cmake/idfcopy.cmake and
+tools/enable_exfat.sh (0018), deleted, with the .gitignore line for the
+components/fatfs they made; usb_host_msc, Espressif's 1.3.0 with the
+Tab5's DMA-sized transfers, in place of the registry's ^1.1.0; and
+usb_host_uac, which the drivers link and pinned from the registry until
+v0.2.0. TAB5_NO_EXFAT is CONFIG_FECKLESS_FATFS_EXFAT=n now; the README
+says so. ffread.h's 64-bit offsets are unchanged: the FatFs is the same
+exFAT FatFs, patched in the same three ways.
+
+Built in m5tab5/ with ESP-IDF release/v6.1 and the component manager
+off, against feckless-libs v0.3.0: `fatfs (feckless): exFAT`, no
+warnings, 0x1bef60 bytes. `make -C m5tab5/test` passes. Not with
+5.5.5, CI's default (fatfs itself was built with 5.5.5 in feckless-libs'
+3002). `dependencies.lock` not updated. After applying: delete
+m5tab5/components/fatfs and build/, and `rm sdkconfig`. Not on a Tab5.

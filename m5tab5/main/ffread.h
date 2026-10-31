@@ -8,7 +8,7 @@
  * is routinely between the two. f_lseek() takes FSIZE_t, which on FAT32
  * is 32 unsigned bits: the whole of any file FAT32 can hold.
  *
- * With exFAT (0018: cmake/exfat.cmake patches FatFs at configure time)
+ * With exFAT (0018; feckless-libs' fatfs patches FatFs at configure time)
  * FSIZE_t is 64 bits, so the same calls reach the whole of a planet
  * archive, about 126 GB. Nothing here changed for it: the offsets were
  * uint64_t from the start, for this.
