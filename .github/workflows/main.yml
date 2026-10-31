@@ -45,6 +45,11 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    # 0039: the firmware is in m5tab5/. Run steps start there; the paths
+    # given to actions (uses:) are from the repository's top.
+    defaults:
+      run:
+        working-directory: m5tab5
 
     steps:
       - name: Checkout Repository
@@ -118,16 +123,16 @@ jobs:
         uses: actions/attest-build-provenance@v2
         with:
           subject-path: |
-            build/aimless_${{ steps.ver.outputs.name }}_moving_map_for_m5tab5_standalone.bin
-            build/aimless_${{ steps.ver.outputs.name }}_moving_map_for_m5tab5.bin
+            m5tab5/build/aimless_${{ steps.ver.outputs.name }}_moving_map_for_m5tab5_standalone.bin
+            m5tab5/build/aimless_${{ steps.ver.outputs.name }}_moving_map_for_m5tab5.bin
 
       - name: Archive build output artifacts
         uses: actions/upload-artifact@v4
         with:
           name: aimless_moving_map_for_m5tab5-${{ steps.ver.outputs.name }}
           path: |
-            build/aimless_${{ steps.ver.outputs.name }}_moving_map_for_m5tab5_standalone.bin
-            build/aimless_${{ steps.ver.outputs.name }}_moving_map_for_m5tab5.bin
+            m5tab5/build/aimless_${{ steps.ver.outputs.name }}_moving_map_for_m5tab5_standalone.bin
+            m5tab5/build/aimless_${{ steps.ver.outputs.name }}_moving_map_for_m5tab5.bin
 
       # The lock the component manager resolved, to be read and
       # committed if it differs; on a 6.1 run, the only IDF 6 lock there
@@ -136,7 +141,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: dependencies.lock-${{ steps.ver.outputs.name }}-idf${{ github.event.inputs.idf_version || 'v5.5.5' }}
-          path: dependencies.lock
+          path: m5tab5/dependencies.lock
           if-no-files-found: ignore
 
       # Asked by event, not by github.ref: a manual run started from a
@@ -152,5 +157,5 @@ jobs:
           generate_release_notes: true
           fail_on_unmatched_files: true
           files: |
-            build/aimless_${{ steps.ver.outputs.name }}_moving_map_for_m5tab5_standalone.bin
-            build/aimless_${{ steps.ver.outputs.name }}_moving_map_for_m5tab5.bin
+            m5tab5/build/aimless_${{ steps.ver.outputs.name }}_moving_map_for_m5tab5_standalone.bin
+            m5tab5/build/aimless_${{ steps.ver.outputs.name }}_moving_map_for_m5tab5.bin

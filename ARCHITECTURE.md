@@ -1254,3 +1254,23 @@ scan's BSSIDs. wifiloc.c compiled on the host with -Wall -Wextra
 board. On the board, a learning scan near those routers logs fewer
 "learned N new" than networks heard, and a card with the original's
 file loads with fewer access points than it has rows.
+
+### 0039 -- the firmware in m5tab5/
+
+As in Duplicitous, Lothesome and Mahjong: CMakeLists.txt, main/,
+components/, cmake/, tools/, test/, dependencies.lock, partitions.csv
+and sdkconfig.defaults move, unchanged, into m5tab5/. Their paths to
+each other are relative (exfat.cmake's ../components/fatfs and
+../tools/enable_exfat.sh, main/CMakeLists.txt's ../tools/fetch_*.py,
+test/Makefile's ../main), so none changed. original/, docs/ and the
+licences stay at the top. The workflow's run steps start in m5tab5/
+(defaults: working-directory) and the paths it gives actions start with
+m5tab5/; the release files keep their names. .gitignore follows the
+test binaries and the generated components/fatfs. The README and
+CLAUDE.md say where things are.
+
+After applying: delete the top-level build/, sdkconfig,
+managed_components/ and components/fatfs/, and build in m5tab5/.
+
+Run here: `make -C m5tab5/test`, every test 0 failures. Built in
+0040, with the libraries it moves to.

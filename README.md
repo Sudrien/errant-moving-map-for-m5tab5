@@ -195,19 +195,20 @@ one file can be any size, including a whole planet build -- about 126 GB,
 so a card of 129 GB or more, since the filesystem needs room of its own.
 
 exFAT comes from a patched copy of ESP-IDF's FatFs that the first
-`idf.py build` makes in `components/fatfs` (`cmake/exfat.cmake`, from
+`idf.py build` makes in `m5tab5/components/fatfs` (`m5tab5/cmake/exfat.cmake`, from
 Defeatist). exFAT was a Microsoft patent family; Microsoft published the
 specification in 2019 and committed it to the Open Invention Network's
 patent non-aggression pool. If that matters to you and you would rather
 not build it in, set `TAB5_NO_EXFAT` in the environment before the first
-configure, or run `./tools/enable_exfat.sh --revert` to take it out
+configure, or run `./tools/enable_exfat.sh --revert` in `m5tab5/` to take it out
 again.
 
 ## Building
 
-ESP-IDF 5.5 or later:
+ESP-IDF 5.5 or later, in `m5tab5/`:
 
 ```
+cd m5tab5
 idf.py set-target esp32p4
 idf.py build flash monitor
 ```
@@ -217,13 +218,13 @@ Rev 2 Tabs (ST7121 panel) only; see feckless-graphics-handler.
 ## Tests
 
 ```
-make -C test
+make -C m5tab5/test
 ```
 
 The map pipeline on a synthetic archive, the grid that follows the
 position, the tile cache and the order tiles are looked for in, and the
 NMEA parser. Only a C compiler is needed;
-`test/make_fixture.py` regenerates the archive.
+`m5tab5/test/make_fixture.py` regenerates the archive.
 
 ## Licence
 

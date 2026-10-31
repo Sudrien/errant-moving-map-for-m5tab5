@@ -8,6 +8,12 @@ in doubt, that repository's CLAUDE.md is the longer version.
 
 **Read this file before writing a patch, not after.**
 
+**The firmware is in `m5tab5/`** (0039): CMakeLists.txt, main/,
+components/, cmake/, tools/, test/, dependencies.lock, partitions.csv
+and sdkconfig.defaults. Paths below that name those -- `main/...`,
+`components/mapcore/`, `make -C test` -- are relative to it. `original/`
+and `docs/` stay at the top.
+
 Claude creates `git am`-able patches authored as
 `Claude <noreply@anthropic.com>`, and presents each as soon as it
 exists, since a session can end before the next one does.
