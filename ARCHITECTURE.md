@@ -1375,3 +1375,15 @@ in feckless_abi_v1 + feckless_abi_network_v1 + feckless_abi_storage_v2`,
 an ELF of 154220 bytes (the world tile not fetched in that build), and
 the .bin 0x1edec0, no warnings. `dependencies.lock` not updated; `rm
 sdkconfig`. Not on a Tab5.
+
+### 0044 -- cJSON into the ELF by the component manager's name for it
+
+0043 named `cjson` in `ELF_COMPONENTS`. The component manager calls the
+registry's component `espressif__cjson`; a requirement may use the short
+name, but the ELF's link takes each one's target, and stopped at `No
+rule to make target '__idf_cjson/fast'`. `elf/CMakeLists.txt` now takes
+the build's component whose name ends in `cjson` (or IDF 5's `json`),
+as Lothesome finds esp-dsp. 0043's build here had the component as
+`cjson` in a scratch directory, with the manager off, which is why it
+passed. Built so again with it as `espressif__cjson`: `feckless_abi:
+212 symbols`, as before. Not on a Tab5.

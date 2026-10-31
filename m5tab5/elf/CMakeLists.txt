@@ -58,13 +58,18 @@ idf_build_set_property(DEPENDENCIES_LOCK "${_m5}/dependencies.lock")
 project(errant_map)
 
 # Into the ELF, not the ABI: the original's map pipeline, and cJSON for
-# M5Launcher's config.conf (IDF's json on 5.x, the registry's cjson on
-# 6.x, as main/CMakeLists.txt picks).
-if(IDF_VERSION_MAJOR GREATER_EQUAL 6)
-    set(ELF_COMPONENTS mapcore cjson)
-else()
-    set(ELF_COMPONENTS mapcore json)
-endif()
+# M5Launcher's config.conf -- IDF's json on 5.x; on 6.x the registry's
+# cjson, whose component the component manager names espressif__cjson
+# (0044: a bare "cjson" has no target, and the ELF's link stopped at
+# "No rule to make target '__idf_cjson/fast'"). Whichever it is, it is
+# the component whose name ends so, as Lothesome finds esp-dsp.
+set(ELF_COMPONENTS mapcore)
+idf_build_get_property(_comps BUILD_COMPONENTS)
+foreach(_c IN LISTS _comps)
+    if(_c MATCHES "(^|__)c?json$")
+        list(APPEND ELF_COMPONENTS "${_c}")
+    endif()
+endforeach()
 feckless_abi_elf(errant_map)
 
 # libversions.h, the licences page's list (0037): generated from the lock,
