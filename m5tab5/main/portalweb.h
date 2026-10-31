@@ -48,7 +48,7 @@ bool portalweb_field(const char *body, size_t len, const char *key,
 bool portalweb_escape(const char *in, char *out, size_t out_size);
 
 /*
- * "Aimless-XXXX" from a MAC: four hex digits of an FNV-1a hash of all
+ * "Errant-XXXX" from a MAC: four hex digits of an FNV-1a hash of all
  * six bytes, not the last two octets. See portal.h for why hashed.
  */
 void portalweb_ap_name(const uint8_t mac[6], char *out, size_t out_size);

@@ -157,7 +157,7 @@ def main():
                 "center_lon_e7": int(lon_of(CX + 0.5) * 1e7),
                 "center_lat_e7": int(lat_of(CY + 0.5) * 1e7),
             },
-            {"name": "aimless test fixture", "attribution": "synthetic"},
+            {"name": "errant test fixture", "attribution": "synthetic"},
         )
     print("wrote %s, %d bytes, %d tiles" % (path, os.path.getsize(path), len(tiles)))
 

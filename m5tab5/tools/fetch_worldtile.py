@@ -61,7 +61,7 @@ class Source:
         else:
             req = urllib.request.Request(
                 self.url, headers={"Range": "bytes=%d-%d" % (off, off + n - 1),
-                                   "User-Agent": "aimless-moving-map build"})
+                                   "User-Agent": "errant-moving-map build"})
             with urllib.request.urlopen(req, timeout=TIMEOUT_S) as r:
                 if r.status != 206:
                     raise IOError("%s: HTTP %d, not 206" % (self.url, r.status))

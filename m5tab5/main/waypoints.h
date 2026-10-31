@@ -3,7 +3,7 @@
  *
  * original/waypoints.cpp as C with no file or clock in it: the list, its
  * file format as bytes, one target at a time, and the straight-line
- * distance and bearing to it. aimless.c reads and writes the file on the
+ * distance and bearing to it. errant.c reads and writes the file on the
  * card and draws the result; this is tested on the host.
  *
  * NOT TURN-BY-TURN, for the original's reason: the archive holds drawing

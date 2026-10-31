@@ -5,7 +5,7 @@
  * original/mapengine.cpp's place lookup (PlaceIndex, place_part(),
  * load_place_block(), ensure_place_blocks(), search_index(),
  * update_place_names(), map_place_text()), with no file and no task in
- * it, so it runs on the host. aimless.c reads the tiles and calls this.
+ * it, so it runs on the host. errant.c reads the tiles and calls this.
  *
  * Not from the grid. A place's point is one centroid, and the grid is
  * four z14 tiles: a township's centroid is usually not in them at all.

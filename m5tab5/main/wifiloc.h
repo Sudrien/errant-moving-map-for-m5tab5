@@ -4,7 +4,7 @@
  *
  * original/wifiloc.cpp's table, learning, locating, file rows and scan
  * timing, with no radio, file or clock in it, so it runs on the host.
- * aimless.c owns the task that scans (wifi_scan_list_quiet(), which
+ * errant.c owns the task that scans (wifi_scan_list_quiet(), which
  * blocks for seconds) and the file on the card.
  *
  * Every access point heard with a good fix is folded into a running

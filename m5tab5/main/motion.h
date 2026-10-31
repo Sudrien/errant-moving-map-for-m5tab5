@@ -4,7 +4,7 @@
  *
  * original/tab5_map.cpp's gnssRatePolicy() and idleDimmed() /
  * applyIdleDim(), with no receiver and no clock in them, so they run on
- * the host. aimless.c sends the rate and sets the backlight. Times are
+ * the host. errant.c sends the rate and sets the backlight. Times are
  * milliseconds that may wrap: everything compares differences, as the
  * original's millis() arithmetic did.
  *

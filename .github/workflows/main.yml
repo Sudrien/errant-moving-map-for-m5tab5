@@ -111,28 +111,28 @@ jobs:
             if [ ! -s "$f" ]; then echo "::warning::$f is empty: the fetch failed, and the firmware is built without it"; fi
           done
           idf.py merge-bin
-          mv build/merged-binary.bin "build/aimless_${NAME}_moving_map_for_m5tab5_standalone.bin"
-          mv build/aimless_moving_map_for_m5tab5.bin "build/aimless_${NAME}_moving_map_for_m5tab5.bin"
+          mv build/merged-binary.bin "build/errant_${NAME}_moving_map_for_m5tab5_standalone.bin"
+          mv build/errant_moving_map_for_m5tab5.bin "build/errant_${NAME}_moving_map_for_m5tab5.bin"
 
       # A signed record that these two files, by their SHA-256, were
       # built by this workflow from this commit. Stored with the
       # repository, not in the files, which flash as before. Every run
       # attests, so a downloaded artifact can be checked too:
-      #   gh attestation verify <file> --repo Sudrien/aimless-moving-map-for-m5tab5
+      #   gh attestation verify <file> --repo Sudrien/errant-moving-map-for-m5tab5
       - name: Attest build provenance
         uses: actions/attest-build-provenance@v2
         with:
           subject-path: |
-            m5tab5/build/aimless_${{ steps.ver.outputs.name }}_moving_map_for_m5tab5_standalone.bin
-            m5tab5/build/aimless_${{ steps.ver.outputs.name }}_moving_map_for_m5tab5.bin
+            m5tab5/build/errant_${{ steps.ver.outputs.name }}_moving_map_for_m5tab5_standalone.bin
+            m5tab5/build/errant_${{ steps.ver.outputs.name }}_moving_map_for_m5tab5.bin
 
       - name: Archive build output artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: aimless_moving_map_for_m5tab5-${{ steps.ver.outputs.name }}
+          name: errant_moving_map_for_m5tab5-${{ steps.ver.outputs.name }}
           path: |
-            m5tab5/build/aimless_${{ steps.ver.outputs.name }}_moving_map_for_m5tab5_standalone.bin
-            m5tab5/build/aimless_${{ steps.ver.outputs.name }}_moving_map_for_m5tab5.bin
+            m5tab5/build/errant_${{ steps.ver.outputs.name }}_moving_map_for_m5tab5_standalone.bin
+            m5tab5/build/errant_${{ steps.ver.outputs.name }}_moving_map_for_m5tab5.bin
 
       # The lock the component manager resolved, to be read and
       # committed if it differs; on a 6.1 run, the only IDF 6 lock there
@@ -157,5 +157,5 @@ jobs:
           generate_release_notes: true
           fail_on_unmatched_files: true
           files: |
-            m5tab5/build/aimless_${{ steps.ver.outputs.name }}_moving_map_for_m5tab5_standalone.bin
-            m5tab5/build/aimless_${{ steps.ver.outputs.name }}_moving_map_for_m5tab5.bin
+            m5tab5/build/errant_${{ steps.ver.outputs.name }}_moving_map_for_m5tab5_standalone.bin
+            m5tab5/build/errant_${{ steps.ver.outputs.name }}_moving_map_for_m5tab5.bin

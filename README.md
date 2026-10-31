@@ -1,4 +1,4 @@
-# Aimless Moving Map *for M5Tab5*
+# Errant Moving Map *for M5Tab5*
 
 An offline moving map for the M5Stack Tab5 with the M135 GNSS module:
 vector tiles from Protomaps PMTiles archives on the card, drawn on the
@@ -168,7 +168,7 @@ without anything saved.
 
 To add a network here, choose "wifi network" in settings, touch the
 screen while it says so at startup, or start with nothing saved. The map comes up as usual, with a box along
-the bottom naming a network, `Aimless-` and four letters: join it on a
+the bottom naming a network, `Errant-` and four letters: join it on a
 phone, and the setup page opens (or open `http://192.168.4.1/`). Choose
 a network and type its password; it is tried before it is saved. The
 box counts down five minutes, and a tap on it closes setup early.
@@ -181,7 +181,7 @@ not supported.
 Tiles come from Protomaps' daily builds by default. They ask that their
 bucket not be hotlinked; for regular use, copy a build to storage of your
 own and set "Where remote tiles come from" and "Pinned build" under
-"Aimless Moving Map" in `idf.py menuconfig`.
+"Errant Moving Map" in `idf.py menuconfig`.
 
 ## Maps
 

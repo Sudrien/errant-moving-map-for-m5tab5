@@ -2,7 +2,7 @@
  * trust.h -- consistency checks on the GNSS solution (0033).
  *
  * original/gpstrust.cpp, with no clock, RTC or receiver in it, so it runs
- * on the host. aimless.c feeds it each fix with the RTC's time and the
+ * on the host. errant.c feeds it each fix with the RTC's time and the
  * PPS interval, and colours the status line by what it says.
  *
  * A receiver believes whatever reaches its antenna: a transmitter nearby,

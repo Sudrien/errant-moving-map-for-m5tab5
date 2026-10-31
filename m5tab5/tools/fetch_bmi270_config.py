@@ -64,7 +64,7 @@ def main():
             with open(a.file, encoding="utf-8", errors="replace") as f:
                 text = f.read()
         else:
-            req = urllib.request.Request(URL, headers={"User-Agent": "aimless-moving-map build"})
+            req = urllib.request.Request(URL, headers={"User-Agent": "errant-moving-map build"})
             with urllib.request.urlopen(req, timeout=TIMEOUT_S) as r:
                 text = r.read().decode("utf-8", errors="replace")
         image = extract(text)

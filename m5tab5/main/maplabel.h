@@ -4,7 +4,7 @@
  *
  * original/mapengine.cpp's label collector (MapLabel, LabelSet,
  * label_add(), rl_part()) and the layout half of its draw_labels(),
- * with no drawing in it, so the layout runs on the host. aimless.c
+ * with no drawing in it, so the layout runs on the host. errant.c
  * draws what this places, with feckless-graphics' ark12.
  *
  * Collected, not baked into the tile, for the original's reasons: a

@@ -22,7 +22,7 @@ CONFIG_CACHE_L2_CACHE_LINE_128B=y
 
 CONFIG_COMPILER_OPTIMIZATION_PERF=y
 CONFIG_FREERTOS_HZ=1000
-# app_main draws; the render task (aimless.c RENDER_STACK) renders. The
+# app_main draws; the render task (errant.c RENDER_STACK) renders. The
 # decoder and rasteriser keep their scratch on the heap, but the call
 # chain is deep, and app_main rendered in milestone 1.
 CONFIG_ESP_MAIN_TASK_STACK_SIZE=16384

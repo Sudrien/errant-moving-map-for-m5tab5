@@ -2,7 +2,7 @@
  * portalweb.c -- see portalweb.h.
  *
  * defeatist-music-player-for-m5tab5's main/portalweb.c at 74535ca,
- * unchanged but for the AP's name: "Aimless-XXXX".
+ * unchanged but for the AP's name: "Errant-XXXX".
  *
  * SPDX-License-Identifier: MIT
  */
@@ -102,7 +102,7 @@ void portalweb_ap_name(const uint8_t mac[6], char *out, size_t out_size)
     const uint16_t tag = (uint16_t)((h >> 16) ^ (h & 0xFFFF));
     static const char X[] = "0123456789ABCDEF";
     const char name[] = {
-        'A','i','m','l','e','s','s','-',
+        'E','r','r','a','n','t','-',
         X[(tag >> 12) & 0xF], X[(tag >> 8) & 0xF],
         X[(tag >> 4) & 0xF],  X[tag & 0xF], '\0'
     };

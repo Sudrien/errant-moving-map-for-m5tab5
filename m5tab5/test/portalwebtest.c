@@ -4,7 +4,7 @@
  * from anyone in radio range, which is the whole reason they are pure.
  *
  * defeatist-music-player-for-m5tab5's texttest/portalwebtest.c at
- * 74535ca, with the AP name's checks for "Aimless-".
+ * 74535ca, with the AP name's checks for "Errant-".
  *
  * SPDX-License-Identifier: MIT
  */
@@ -104,7 +104,7 @@ int main(void)
         portalweb_ap_name(a, na, sizeof na);
         portalweb_ap_name(b, nb, sizeof nb);
         portalweb_ap_name(a, na2, sizeof na2);
-        CHECK(strlen(na) == 12 && strncmp(na, "Aimless-", 8) == 0, "got '%s'", na);
+        CHECK(strlen(na) == 11 && strncmp(na, "Errant-", 7) == 0, "got '%s'", na);
         CHECK(strcmp(na, na2) == 0, "not stable");
         CHECK(strcmp(na, nb) != 0, "neighbours collide: %s", na);
         CHECK(strstr(na, "3456") == NULL && strstr(na, "5634") == NULL, "publishes the octets: %s", na);

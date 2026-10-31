@@ -13,7 +13,7 @@
  * runs on its own task and the status is copied out, as there.
  *
  * Called at boot when nothing is saved and Launcher is present
- * (aimless.c), so a network typed into Launcher is not asked for again.
+ * (errant.c), so a network typed into Launcher is not asked for again.
  *
  * SPDX-License-Identifier: MIT
  */

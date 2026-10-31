@@ -185,7 +185,7 @@ static int net_read(void *ctx, uint64_t off, uint32_t len, uint8_t *dst)
 
 static void set_url(const char *build)
 {
-    snprintf(s_url, sizeof(s_url), "%s%s.pmtiles", CONFIG_AIMLESS_TILE_BASE, build);
+    snprintf(s_url, sizeof(s_url), "%s%s.pmtiles", CONFIG_ERRANT_TILE_BASE, build);
 }
 
 /* The first 16 bytes of a candidate: "PMTiles" and version 3. */
@@ -310,8 +310,8 @@ void netremote_init(const char *dir, const maptile_alloc_t *mem)
             ESP_LOGI(TAG, "cache %s: %u tiles, %u KB", s_build, (unsigned)s_cache.n,
                      (unsigned)(s_cache.blob_len / 1024));
     }
-    ESP_LOGI(TAG, "tiles from %s%s", CONFIG_AIMLESS_TILE_BASE,
-             CONFIG_AIMLESS_PINNED_BUILD[0] ? CONFIG_AIMLESS_PINNED_BUILD ".pmtiles"
+    ESP_LOGI(TAG, "tiles from %s%s", CONFIG_ERRANT_TILE_BASE,
+             CONFIG_ERRANT_PINNED_BUILD[0] ? CONFIG_ERRANT_PINNED_BUILD ".pmtiles"
                                             : "<date>.pmtiles");
 }
 
@@ -331,7 +331,7 @@ void netremote_update(tilesrc_t *s)
     }
     today_from_clock();
 
-    const bool pinned = CONFIG_AIMLESS_PINNED_BUILD[0] != 0;
+    const bool pinned = CONFIG_ERRANT_PINNED_BUILD[0] != 0;
     /* builddate.h's bd_choose() is the rule, host-tested (0019). An open
      * archive is kept while the rule still picks it. */
     bool aged = false;
@@ -348,7 +348,7 @@ void netremote_update(tilesrc_t *s)
     char want[16] = "";
     switch (bd_choose(pinned, s_build, s_gone, s_today, s_adopted, REFRESH_DAYS)) {
     case BD_PINNED:
-        snprintf(want, sizeof(want), "%s", CONFIG_AIMLESS_PINNED_BUILD);
+        snprintf(want, sizeof(want), "%s", CONFIG_ERRANT_PINNED_BUILD);
         break;
     case BD_RECORDED:
         snprintf(want, sizeof(want), "%s", s_build);

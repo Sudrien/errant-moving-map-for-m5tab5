@@ -25,7 +25,7 @@
  *
  *   Every SSID is escaped into the page; the password is never logged.
  *
- *   "Aimless-XXXX", hashed from the MAC, so two in a room differ.
+ *   "Errant-XXXX", hashed from the MAC, so two in a room differ.
  *
  *   Five minutes, then the AP comes down by itself, because the case
  *   that matters is the one where nobody comes back to close it.

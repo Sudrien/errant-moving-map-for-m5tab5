@@ -99,7 +99,7 @@ static inline int32_t bd_parse_name(const char *s)
 /*
  * Which build to open, the decision netremote_update() makes (0019).
  *
- *   BD_PINNED       AIMLESS_PINNED_BUILD is set: that, always
+ *   BD_PINNED       ERRANT_PINNED_BUILD is set: that, always
  *   BD_RECORDED     the one in build.txt
  *   BD_DISCOVER     probe back from today for the newest
  *   BD_WAIT_DATE    a probe is needed and there is no date yet

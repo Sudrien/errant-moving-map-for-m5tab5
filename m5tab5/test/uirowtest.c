@@ -14,7 +14,7 @@ static int checks, failures;
 
 #define SW 1280
 #define SH 720
-#define TOP 36      /* aimless.c's STATUS_H */
+#define TOP 36      /* errant.c's STATUS_H */
 
 int main(void)
 {

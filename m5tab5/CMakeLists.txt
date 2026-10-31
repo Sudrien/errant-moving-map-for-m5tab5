@@ -6,7 +6,7 @@ cmake_minimum_required(VERSION 3.16)
 
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 idf_build_set_property(MINIMAL_BUILD ON)
-project(aimless_moving_map_for_m5tab5)
+project(errant_moving_map_for_m5tab5)
 
 # libversions.h, the licences page's list (0037): generated from the lock,
 # the BMI270 pin and the world tile's source when the build is

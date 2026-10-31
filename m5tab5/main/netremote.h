@@ -6,13 +6,13 @@
  * found by date, and the tile cache opened for it.
  *
  * WHICH BUILD. Protomaps keeps about a week of daily builds, named
- * YYYYMMDD.pmtiles. With no pinned build (Kconfig AIMLESS_PINNED_BUILD)
+ * YYYYMMDD.pmtiles. With no pinned build (Kconfig ERRANT_PINNED_BUILD)
  * the device probes backwards from today's UTC date -- from GNSS or from
  * SNTP, whichever arrives -- and records the build it adopted in
  * `<dir>/build.txt`. After 30 days it probes again; a new build gets a
  * new cache and the old one's two files are removed.
  *
- * WHERE FROM. Kconfig AIMLESS_TILE_BASE, the original's TILE_BASE:
+ * WHERE FROM. Kconfig ERRANT_TILE_BASE, the original's TILE_BASE:
  * Protomaps' own build bucket by default, which they ask people not to
  * hotlink -- fine for trying it, and the reason the base is a setting.
  * Any host that answers range requests serves.

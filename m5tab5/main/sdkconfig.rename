@@ -1,0 +1,5 @@
+# 0042: Aimless Moving Map is Errant Moving Map. An sdkconfig from before
+# keeps its values under the new names.
+# sdkconfig_name_old              sdkconfig_name_new
+CONFIG_AIMLESS_TILE_BASE          CONFIG_ERRANT_TILE_BASE
+CONFIG_AIMLESS_PINNED_BUILD       CONFIG_ERRANT_PINNED_BUILD

@@ -222,12 +222,12 @@ static const char PAGE_HEAD[] =
     "<!doctype html><html lang=en><head><meta charset=utf-8>"
     "<meta name=viewport content='width=device-width,initial-scale=1'>";
 static const char PAGE_STYLE[] =
-    "<title>Aimless Moving Map setup</title>"
+    "<title>Errant Moving Map setup</title>"
     "<style>"
     "body{font:18px sans-serif;margin:24px;max-width:28em}"
     "input,select,button{font:inherit;width:100%;padding:10px;margin:6px 0;box-sizing:border-box}"
     "p.m{padding:10px;background:#eee}"
-    "</style></head><body><h2>Aimless Moving Map</h2>";
+    "</style></head><body><h2>Errant Moving Map</h2>";
 static const char PAGE_TAIL[] = "</body></html>";
 
 /* Never an empty chunk: in chunked HTTP a zero-length chunk ends the

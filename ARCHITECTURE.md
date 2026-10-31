@@ -1,6 +1,7 @@
 # Architecture
 
-What the code is and why it is that way. `CLAUDE.md` has the rules for
+What the code is and why it is that way -- Errant Moving Map, Aimless
+Moving Map until 0042, whose name the entries before it keep. `CLAUDE.md` has the rules for
 changing it; `original/` is the program being ported, and its own long
 comments are still the best account of why the map code does what it
 does.
@@ -1316,3 +1317,27 @@ warnings, 0x1bef60 bytes. `make -C m5tab5/test` passes. Not with
 5.5.5, CI's default (fatfs itself was built with 5.5.5 in feckless-libs'
 3002). `dependencies.lock` not updated. After applying: delete
 m5tab5/components/fatfs and build/, and `rm sdkconfig`. Not on a Tab5.
+
+### 0042 -- Aimless Moving Map is Errant Moving Map
+
+Avoidant, Duplicitous as was, took the A; this took the E, and the
+repository is errant-moving-map-for-m5tab5. The project is
+errant_moving_map_for_m5tab5, so the image and the releases' files are
+named errant_...; main/aimless.c is main/errant.c; the log tag, the
+setup network (`Errant-` and four letters, one shorter than
+`Aimless-`; portalweb.c spells it a letter at a time), the menuconfig menu and the
+licences page's address say Errant. The two options are
+CONFIG_ERRANT_TILE_BASE and CONFIG_ERRANT_PINNED_BUILD, and
+main/sdkconfig.rename maps the old names to them, so an sdkconfig from
+before keeps its values. Kept: the files on the card, .aimless.* --
+waypoints, the last fix, the AssistNow database, the Wi-Fi locations,
+the tile cache -- so a card written before is read as it was; and the
+saved networks' NVS namespace, "defeatist", which is shared with the
+player on purpose. The entries before this one keep the old name.
+
+Built in m5tab5/ with ESP-IDF release/v6.1 and the component manager
+off, against feckless-libs v0.3.0: no warnings, 0x1bef50 bytes. An
+sdkconfig with CONFIG_AIMLESS_TILE_BASE set to a test address came out
+of the build with CONFIG_ERRANT_TILE_BASE at that address, and the
+image holds it, beside /sd/.aimless.waypoints.dat.
+`make -C m5tab5/test` passes. Not on a Tab5.

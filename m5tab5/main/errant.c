@@ -1,5 +1,5 @@
 /*
- * aimless.c -- the map from the card and the network, with the
+ * errant.c -- the map from the card and the network, with the
  * receiver's position on it. Milestones 1 and 2.
  *
  * What runs:
@@ -90,7 +90,7 @@
 #include "aop.h"
 #include "mercator.h"
 
-static const char *TAG = "aimless";
+static const char *TAG = "errant";
 
 /* The way up for the original's setRotation(3); see the top of this file. */
 #define VIEW_ROTATION   (GFX_ROT_270)
@@ -126,6 +126,8 @@ static const char *TAG = "aimless";
  * (original/tilecache.cpp CACHE_DIR); dotted and hidden since 0023, as
  * the other files this writes, and an existing /t is renamed to it so
  * its tiles are kept. */
+/* 0042: the files this keeps on the card keep the old name, .aimless.*,
+ * so a card written before the rename is read as it was. */
 #define CACHE_SUBDIR    "/.aimless.tiles"
 #define CACHE_OLD       "/t"
 
@@ -1217,7 +1219,7 @@ static void draw_about(void)
 
     box(p.x, p.y, p.w, p.h, COL_PANEL_BG, COL_BTN_EDGE);
     gfx_draw_text(p.x + 18, p.y + 18, "licences", TEXT_SCALE, 200, COL_STATUS_FG);
-    gfx_draw_text(p.x + 150, p.y + 20, "github.com/Sudrien/aimless-moving-map-for-m5tab5",
+    gfx_draw_text(p.x + 150, p.y + 20, "github.com/Sudrien/errant-moving-map-for-m5tab5",
                   TEXT_SCALE, p.w - 170, COL_DIM);
     for (int r = 0; r < rows; r++) {
         const int i = s_about_scroll + r;
@@ -1830,7 +1832,7 @@ static void daylight(const gnss_fix_t *fix)
 static bool setup_asked(void)
 {
     if (!touch_present()) return false;
-    draw_message("Aimless Moving Map", "Touch the screen now to set up Wi-Fi.");
+    draw_message("Errant Moving Map", "Touch the screen now to set up Wi-Fi.");
     const int64_t t0 = esp_timer_get_time();
     while (esp_timer_get_time() - t0 < SETUP_WINDOW_US) {
         int x, y;
@@ -2489,7 +2491,7 @@ void app_main(void)
 {
     {
         const esp_app_desc_t *d = esp_app_get_description();
-        ESP_LOGW(TAG, "=== Aimless Moving Map === %s, IDF %s, built %s %s",
+        ESP_LOGW(TAG, "=== Errant Moving Map === %s, IDF %s, built %s %s",
                  d ? d->version : "?", d ? d->idf_ver : "?",
                  d ? d->date : "?", d ? d->time : "?");
     }
@@ -2499,7 +2501,7 @@ void app_main(void)
     ESP_ERROR_CHECK(lcd_init(&panel));
     ESP_ERROR_CHECK(gfx_init(panel, LCD_H_RES, LCD_V_RES));
     gfx_set_rotation(VIEW_ROTATION);
-    draw_message("Aimless Moving Map", "looking for maps");
+    draw_message("Errant Moving Map", "looking for maps");
     ESP_ERROR_CHECK(lcd_backlight_set(BACKLIGHT_PCT));
     s_backlight = BACKLIGHT_PCT;
     /* After the panel: the controller's reset is released with the
@@ -2545,7 +2547,7 @@ void app_main(void)
         if (!bufs[i]) { draw_message("Out of memory", "tile buffers"); return; }
     }
     world_draw();
-    draw_message("Aimless Moving Map", "looking for maps");
+    draw_message("Errant Moving Map", "looking for maps");
 
     /* The card, and a USB drive on the USB-A port, which feckless-storage
      * registers with the drivers' USB host before the port comes up. */
@@ -2573,7 +2575,7 @@ void app_main(void)
      * first apply already knows whether the portal wants it, and the
      * background join does not start a scan the portal's would race. */
     setup_begin(setup_asked());
-    draw_message("Aimless Moving Map", "looking for maps");
+    draw_message("Errant Moving Map", "looking for maps");
     /* The join runs on the network's own worker; this returns at once. */
     wifi_request_apply();
 

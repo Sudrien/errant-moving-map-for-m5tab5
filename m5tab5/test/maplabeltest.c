@@ -27,7 +27,7 @@ static int checks, failures;
 #define CY  6160
 #define W   1280
 #define H   720
-/* As aimless.c: the status bar's height, and a band ending above the
+/* As errant.c: the status bar's height, and a band ending above the
  * button row. Any band will do; these are the device's. */
 #define TOP 36
 #define BOT 620
