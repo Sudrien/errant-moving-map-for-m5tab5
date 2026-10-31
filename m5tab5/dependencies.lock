@@ -33,7 +33,7 @@ dependencies:
       require: private
       version: '>=4.1'
     source:
-      registry_url: https://components.espressif.com
+      registry_url: https://components.espressif.com/
       type: service
     version: 0.5.3
   espressif/eppp_link:
@@ -176,7 +176,7 @@ dependencies:
       type: service
     version: 1.1.0
   espressif/iot_usbh_cdc:
-    component_hash: e924a79e9b7926b38bee52234d9f90101d8926f5e560dd5edf51c395546eac87
+    component_hash: f6cb3cdb7cf0b1434a4edcca0ecfabc7bf997b5572995ebbd72570c2183ef82c
     dependencies:
     - name: espressif/cmake_utilities
       registry_url: https://components.espressif.com
@@ -200,7 +200,7 @@ dependencies:
     - esp32s3
     - esp32s31
     - esp32p4
-    version: 3.1.0
+    version: 3.1.1
   espressif/iot_usbh_ecm:
     component_hash: d5a216b80f1c457f2b55116b290bdb9553606de6c720f011c2264a05f6507ba5
     dependencies:
@@ -235,7 +235,7 @@ dependencies:
       require: private
       version: '>=5.5.3'
     source:
-      registry_url: https://components.espressif.com
+      registry_url: https://components.espressif.com/
       type: service
     targets:
     - esp32s2
@@ -245,58 +245,6 @@ dependencies:
     - esp32h4
     - linux
     version: 1.6.0
-  espressif/usb_host_msc:
-    component_hash: d8765c212bb4915d42560886fac3cc5059d61a0bfa14152b32ea9a5258e7a0c9
-    dependencies:
-    - name: idf
-      require: private
-      version: '>=5.0'
-    - name: espressif/usb
-      registry_url: https://components.espressif.com
-      require: public
-      rules:
-      - if: idf_version >=6.0
-      - if: target not in ["linux"]
-      version: ^1.0.0
-    source:
-      registry_url: https://components.espressif.com/
-      type: service
-    targets:
-    - esp32s2
-    - esp32s3
-    - esp32p4
-    - esp32h4
-    - esp32s31
-    - linux
-    version: 1.3.0
-  espressif/usb_host_uac:
-    component_hash: 02f7e669b4dae033347e4523acaed4b8c402290a887878d396811c4bee47cc46
-    dependencies:
-    - name: espressif/cmake_utilities
-      registry_url: https://components.espressif.com
-      require: private
-      version: 0.5.*
-    - name: idf
-      require: private
-      version: '>=5.0'
-    - name: espressif/usb
-      registry_url: https://components.espressif.com
-      require: public
-      rules:
-      - if: idf_version >=6.0
-      - if: target not in ["linux"]
-      version: ^1.0.0
-    source:
-      registry_url: https://components.espressif.com/
-      type: service
-    targets:
-    - esp32s2
-    - esp32s3
-    - esp32s31
-    - esp32p4
-    - esp32h4
-    - linux
-    version: 1.5.0
   espressif/wifi_remote_over_eppp:
     component_hash: 1fd6968af20f0b19e421f6b519b0a8caf81d689afc3783b564c28559e45f66ef
     dependencies:
@@ -311,8 +259,18 @@ dependencies:
       registry_url: https://components.espressif.com
       type: service
     version: 0.3.3
+  fatfs:
+    component_hash: ee923d88f95284c00cac4f1448fe0acabd299e5bd2170db5ed93bf6a584b3dd7
+    dependencies:
+    - name: idf
+      version: '>=5.4.2'
+    source:
+      git: https://github.com/Sudrien/feckless-libs-for-m5tab5.git
+      path: components/fatfs
+      type: git
+    version: 9806e2198eab0717d3065ad80fd6d79abda6f825
   feckless_drivers:
-    component_hash: 3c2de6845ea3eb95038ce6557e480ca9950c2d6fabed90621adbb3c536fa4f9a
+    component_hash: a7fe273ba0d7518df6ed91798a267549ce8a5aef7fad6b288b1399c1d3e4f761
     dependencies:
     - name: idf
       version: '>=5.4.2'
@@ -321,24 +279,24 @@ dependencies:
     - name: espressif/esp_lcd_touch_gt911
       version: '*'
     source:
-      git: https://github.com/Sudrien/feckless-drivers-for-m5tab5.git
-      path: .
+      git: https://github.com/Sudrien/feckless-libs-for-m5tab5.git
+      path: components/feckless_drivers
       type: git
-    version: cd9c246e82305bbc1d3ffe1ff5248251c68b68ee
+    version: 9806e2198eab0717d3065ad80fd6d79abda6f825
   feckless_graphics_handler:
-    component_hash: dbe765548ffbb53d449fb620d3b9636e97d9aa66d90bf5a3b51f3aca9f7db02d
+    component_hash: f1d68363ea2fdc4324099b88fa247a472c6e97c4d407422d74e8acb3f575ff66
     dependencies:
     - name: idf
       version: '>=5.4.2'
     - name: espressif/esp_lcd_st7121
       version: ^1.0.0
     source:
-      git: https://github.com/Sudrien/feckless-graphics-handler-for-m5tab5.git
-      path: .
+      git: https://github.com/Sudrien/feckless-libs-for-m5tab5.git
+      path: components/feckless_graphics_handler
       type: git
-    version: e9c88afbedffabef75de3f7ccc51b4ddb5cf5801
+    version: 9806e2198eab0717d3065ad80fd6d79abda6f825
   feckless_network_handler:
-    component_hash: 5a8996f8347b630a71bebbb1ab767090f300eef66c992dd930b01a47396f03ce
+    component_hash: ffa2f2ffc700426b39a9647d31a7992dfe6c756567e30e72293ca8c849963a8f
     dependencies:
     - name: idf
       version: '>=5.4.2'
@@ -352,33 +310,80 @@ dependencies:
     - name: espressif/iot_usbh_ecm
       version: '*'
     source:
-      git: https://github.com/Sudrien/feckless-network-handler-for-m5tab5.git
-      path: .
+      git: https://github.com/Sudrien/feckless-libs-for-m5tab5.git
+      path: components/feckless_network_handler
       type: git
-    version: e4ef6e5bc09edf1253d53f52bf5996db7d6894f0
+    version: 9806e2198eab0717d3065ad80fd6d79abda6f825
   feckless_storage_handler:
-    component_hash: 146a764c800770e7d79c2c16a6d38f29334fef302bf4a28a003fdc70a87beb9e
+    component_hash: a14fe7f66c95eea5f4736db4f16330db2a907820c5a4dfb2f3bed4c3438113da
     dependencies:
     - name: idf
       version: '>=5.4.2'
     source:
-      git: https://github.com/Sudrien/feckless-storage-handler-for-m5tab5.git
-      path: .
+      git: https://github.com/Sudrien/feckless-libs-for-m5tab5.git
+      path: components/feckless_storage_handler
       type: git
-    version: 25505536be67cf36f0b0c440ac9a05e3d129fdd7
+    version: 9806e2198eab0717d3065ad80fd6d79abda6f825
   idf:
     source:
       type: idf
     version: 6.1.0
+  usb_host_msc:
+    component_hash: 6618176a90ac04a262426936583130dde1f3e40cf7a987b2cb066ce73741d620
+    dependencies:
+    - name: idf
+      version: '>=5.0'
+    - name: espressif/usb
+      public: true
+      rules:
+      - if: idf_version >=6.0
+      version: ^1.0.0
+    source:
+      git: https://github.com/Sudrien/feckless-libs-for-m5tab5.git
+      path: components/usb_host_msc
+      type: git
+    targets:
+    - esp32s2
+    - esp32s3
+    - esp32p4
+    - esp32h4
+    - esp32s31
+    - linux
+    version: 9806e2198eab0717d3065ad80fd6d79abda6f825
+  usb_host_uac:
+    component_hash: acac20dd5ad9b3120047a5773732a84eeda368c7cea29e979ed295e905060025
+    dependencies:
+    - name: idf
+      version: '>=5.0'
+    - name: espressif/cmake_utilities
+      version: 0.5.*
+    - name: espressif/usb
+      public: true
+      rules:
+      - if: idf_version >=6.0
+      version: ^1.0.0
+    source:
+      git: https://github.com/Sudrien/feckless-libs-for-m5tab5.git
+      path: components/usb_host_uac
+      type: git
+    targets:
+    - esp32s2
+    - esp32s3
+    - esp32s31
+    - esp32p4
+    - esp32h4
+    - linux
+    version: 9806e2198eab0717d3065ad80fd6d79abda6f825
 direct_dependencies:
 - espressif/cjson
-- espressif/usb_host_msc
-- espressif/usb_host_uac
+- fatfs
 - feckless_drivers
 - feckless_graphics_handler
 - feckless_network_handler
 - feckless_storage_handler
 - idf
-manifest_hash: daf92ca9ea7c4ffb3d225f6ea27a903c2bd120cbf73b29d2e2a2cd8764a04483
+- usb_host_msc
+- usb_host_uac
+manifest_hash: d87a87c2c95855866a2bfa9e87ef9cd95b7f326e244c83b5b274b8208ceb8b81
 target: esp32p4
 version: 3.0.0
