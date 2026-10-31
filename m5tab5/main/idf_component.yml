@@ -23,34 +23,34 @@ dependencies:
   feckless_abi:
     git: https://github.com/Sudrien/feckless-libs-for-m5tab5.git
     path: components/feckless_abi
-    version: "v0.6.0"
+    version: "v0.6.1"
   feckless_abi_storage:
     git: https://github.com/Sudrien/feckless-libs-for-m5tab5.git
     path: components/feckless_abi_storage
-    version: "v0.6.0"
+    version: "v0.6.1"
   feckless_abi_network:
     git: https://github.com/Sudrien/feckless-libs-for-m5tab5.git
     path: components/feckless_abi_network
-    version: "v0.6.0"
+    version: "v0.6.1"
   feckless_drivers:
     git: https://github.com/Sudrien/feckless-libs-for-m5tab5.git
     path: components/feckless_drivers
-    version: "v0.6.0"
+    version: "v0.6.1"
   feckless_graphics_handler:
     git: https://github.com/Sudrien/feckless-libs-for-m5tab5.git
     path: components/feckless_graphics_handler
-    version: "v0.6.0"
+    version: "v0.6.1"
   feckless_storage_handler:
     git: https://github.com/Sudrien/feckless-libs-for-m5tab5.git
     path: components/feckless_storage_handler
-    version: "v0.6.0"
+    version: "v0.6.1"
   # Wi-Fi through the C6, saved networks, USB Ethernet. Brings
   # esp_hosted, esp_wifi_remote, esp_usbh_asix and iot_usbh_ecm with it;
   # its idf_component.yml says why each is pinned or not.
   feckless_network_handler:
     git: https://github.com/Sudrien/feckless-libs-for-m5tab5.git
     path: components/feckless_network_handler
-    version: "v0.6.0"
+    version: "v0.6.1"
 
   # 0041: from feckless-libs v0.3.0 as well -- fatfs, IDF's FatFs with
   # exFAT (0018's cmake/exfat.cmake did that here); and the two USB class
@@ -61,12 +61,12 @@ dependencies:
   fatfs:
     git: https://github.com/Sudrien/feckless-libs-for-m5tab5.git
     path: components/fatfs
-    version: "v0.6.0"
+    version: "v0.6.1"
   usb_host_msc:
     git: https://github.com/Sudrien/feckless-libs-for-m5tab5.git
     path: components/usb_host_msc
-    version: "v0.6.0"
+    version: "v0.6.1"
   usb_host_uac:
     git: https://github.com/Sudrien/feckless-libs-for-m5tab5.git
     path: components/usb_host_uac
-    version: "v0.6.0"
+    version: "v0.6.1"
