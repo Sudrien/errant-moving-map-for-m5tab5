@@ -1387,3 +1387,36 @@ as Lothesome finds esp-dsp. 0043's build here had the component as
 `cjson` in a scratch directory, with the manager off, which is why it
 passed. Built so again with it as `espressif__cjson`: `feckless_abi:
 212 symbols`, as before. Not on a Tab5.
+
+### 0045 -- an RTL8152 in its CDC-ECM configuration, and 0043 on a Tab5
+
+*0043 and 0044 on a Tab5*, the .elf run from the card through Avoidant
+(its 0040, 0041): the board, the RX8130 (`tab5_rtc: RX8130 at 0x32`) and
+the BMI270 (`imu: BMI270 at 0x68: configured`) through the core list's
+I2C devices, the GNSS on its UART (`957 sentences/min`), the world
+drawn, the radio up through the network section (`tab5_wifi: radio up,
+station MAC ...`), a scan, the portal's access point and DHCP server
+(`portal up: join Errant-3E78 and open http://192.168.4.1/`), closed by
+touch and the radio down. USB Ethernet's class registered after the
+port was up, as the drivers allow: `class registered late: cycling
+VBUS`, and an attached adapter enumerated again (`USBH_CDC: New device
+connected, address: 2`).
+
+But in its first configuration: `iot_usbh_ecm: No ECM interface found
+for device VID: 0BDA, PID: 8152, ignore it`. A Realtek RTL8152/8153
+speaks CDC-ECM in its second, and the drivers ask the application which
+to take, through `usbhost_set_config_select()`; Defeatist answers with
+the network handler's `ethcfg_select()`, Errant never did -- so this was
+so before 0043. `net_start()` now sets it before `wifi_init()`. The
+drivers read it at each enumeration, and the class's cycle of the port
+comes after, so an adapter already attached meets it.
+
+On the radio going down, `E SD_HOST: sd_host_del_sdmmc_controller(417):
+host controller with slot registered`: esp_hosted's teardown asking to
+delete the SDMMC controller the card's slot shares, and refused. Not
+new with 0043, as far as the code shows; the card stays mounted.
+
+Built in m5tab5/ with ESP-IDF v6.1 and the component manager off:
+`feckless_abi: 213 symbols`, one more (`usbhost_set_config_select`, in
+the core list; `ethcfg_select()` is inline, so in the ELF). Not on a
+Tab5.

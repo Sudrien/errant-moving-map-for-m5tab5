@@ -59,6 +59,7 @@
 #include "feckless_abi.h"            /* 0043 */
 #include "feckless_abi_network.h"
 #include "feckless_abi_storage.h"
+#include "ethcfg.h"                 /* 0045 */
 #include "feckless_net.h"
 #include "wifi.h"
 #include "wifistore.h"
@@ -1713,6 +1714,16 @@ static void net_start(void)
         .usb_register_class = usbhost_register_class,
     };
     feckless_net_set_hooks(&hooks);
+    /* 0045: which configuration a Realtek RTL8152/8153 gets. It comes up
+     * in a vendor configuration and speaks CDC-ECM in its second; the
+     * drivers ask the application, and Defeatist has always answered
+     * with the network handler's ethcfg_select(). Errant never did, so
+     * the adapter enumerated in its first and iot_usbh_ecm logged "No ECM
+     * interface found for device VID: 0BDA, PID: 8152, ignore it" -- seen
+     * under Avoidant, and so before 0043 as well. The drivers read it at
+     * each enumeration, and ethernet_init()'s class cycles the port
+     * below, so an adapter already attached meets it. */
+    usbhost_set_config_select(ethcfg_select);
     wifi_init(tab5io_exp2());
     /* 0043: after usbhost_start() now, the launcher's; the port is cycled for it. */
     if (ethernet_init() != ESP_OK)
