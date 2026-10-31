@@ -15,15 +15,17 @@ marker are drawn on top of this on the device.*
 A port of
 [m5tab5_m135_gnss_protomaps_live_area_map](https://github.com/Sudrien/m5tab5_m135_gnss_protomaps_live_area_map),
 kept unchanged in `original/` for reference, to plain ESP-IDF with no
-Arduino core and no M5Unified, on four libraries pulled out of
+Arduino core and no M5Unified, on four libraries from
+[feckless-libs-for-m5tab5](https://github.com/Sudrien/feckless-libs-for-m5tab5),
+pulled out of
 [Defeatist Music Player for M5Tab5](https://github.com/Sudrien/defeatist-music-player-for-m5tab5):
 
 | Library | For |
 |---|---|
-| [feckless-drivers-for-m5tab5](https://github.com/Sudrien/feckless-drivers-for-m5tab5) | the I2C bus and IO expanders, the USB host |
-| [feckless-graphics-handler-for-m5tab5](https://github.com/Sudrien/feckless-graphics-handler-for-m5tab5) | the panel, the framebuffer, text |
-| [feckless-storage-handler-for-m5tab5](https://github.com/Sudrien/feckless-storage-handler-for-m5tab5) | the microSD card and USB drives |
-| [feckless-network-handler-for-m5tab5](https://github.com/Sudrien/feckless-network-handler-for-m5tab5) | Wi-Fi, saved networks, USB Ethernet |
+| [feckless_drivers](https://github.com/Sudrien/feckless-libs-for-m5tab5/tree/main/components/feckless_drivers) | the I2C bus and IO expanders, the USB host |
+| [feckless_graphics_handler](https://github.com/Sudrien/feckless-libs-for-m5tab5/tree/main/components/feckless_graphics_handler) | the panel, the framebuffer, text |
+| [feckless_storage_handler](https://github.com/Sudrien/feckless-libs-for-m5tab5/tree/main/components/feckless_storage_handler) | the microSD card and USB drives |
+| [feckless_network_handler](https://github.com/Sudrien/feckless-libs-for-m5tab5/tree/main/components/feckless_network_handler) | Wi-Fi, saved networks, USB Ethernet |
 
 ## Status: milestone 2, and the start of 3
 

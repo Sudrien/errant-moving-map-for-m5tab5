@@ -1274,3 +1274,24 @@ managed_components/ and components/fatfs/, and build in m5tab5/.
 
 Run here: `make -C m5tab5/test`, every test 0 failures. Built in
 0040, with the libraries it moves to.
+
+### 0040 -- the feckless libraries from feckless-libs-for-m5tab5 v0.2.0
+
+The feckless repositories became components of one,
+feckless-libs-for-m5tab5, released under one tag. The manifest names
+feckless_drivers, feckless_graphics_handler, feckless_storage_handler
+and feckless_network_handler there, each by `path:`, all at v0.2.0, in
+place of their own repositories (v0.5.9, v0.2.7, v0.1.0 and v0.2.2),
+now archived. The espressif/usb_host_uac pin goes: the drivers' own
+manifest pins 1.5.0 since v0.2.0. usb_host_msc stays.
+
+Code that changes underneath: the drivers v0.5.9 -> v0.5.10 and the
+graphics handler v0.2.7 -> v0.2.9, which let their inits run a second
+time and a USB class register late. The storage and network handlers'
+code is as before.
+
+Built in m5tab5/ with ESP-IDF release/v6.1 (9a97f6c) and the component
+manager off, against feckless-libs v0.2.0 (2edea9f) and the registry
+components' sources from GitHub: aimless_moving_map_for_m5tab5.bin
+0x1bef10 bytes. Not with 5.5.5, CI's default. `dependencies.lock` not
+updated. Not on a Tab5.

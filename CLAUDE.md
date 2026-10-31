@@ -45,10 +45,12 @@ of the next build has its diff read before it is committed.
 build.** The defaults only fill keys an existing sdkconfig lacks.
 
 **The board, the panel and the storage are not in this repository.**
-They are feckless-drivers-for-m5tab5, feckless-graphics-handler-for-m5tab5
-and feckless-storage-handler-for-m5tab5. A change to them is a patch
-against that repository, under the player's rules, and this one picks it
-up by moving its tag in `main/idf_component.yml`.
+They are feckless_drivers, feckless_graphics_handler,
+feckless_storage_handler and feckless_network_handler, components of
+feckless-libs-for-m5tab5. A change to them is a patch
+against that repository, under its rules, and this one picks it up by
+moving the tag in `main/idf_component.yml` -- one tag, the same for all
+four.
 
 **`components/mapcore/` is the original's code, unchanged.** It was
 copied byte for byte from `original/`. A fix to it is a patch here like

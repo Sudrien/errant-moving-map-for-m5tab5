@@ -11,26 +11,32 @@ dependencies:
       - if: "idf_version >=6.0"
 
   # The board, the panel and the storage, from the libraries pulled out of
-  # defeatist-music-player-for-m5tab5. PINNED TO TAGS: a moving branch
-  # would change underneath a build that worked.
+  # defeatist-music-player-for-m5tab5: since 0040 the components of
+  # feckless-libs-for-m5tab5, every one at the same tag. PINNED TO TAGS:
+  # a moving branch would change underneath a build that worked.
   feckless_drivers:
-    git: https://github.com/Sudrien/feckless-drivers-for-m5tab5.git
-    version: "v0.5.9"
+    git: https://github.com/Sudrien/feckless-libs-for-m5tab5.git
+    path: components/feckless_drivers
+    version: "v0.2.0"
   feckless_graphics_handler:
-    git: https://github.com/Sudrien/feckless-graphics-handler-for-m5tab5.git
-    version: "v0.2.7"
+    git: https://github.com/Sudrien/feckless-libs-for-m5tab5.git
+    path: components/feckless_graphics_handler
+    version: "v0.2.0"
   feckless_storage_handler:
-    git: https://github.com/Sudrien/feckless-storage-handler-for-m5tab5.git
-    version: "v0.1.0"
+    git: https://github.com/Sudrien/feckless-libs-for-m5tab5.git
+    path: components/feckless_storage_handler
+    version: "v0.2.0"
   # Wi-Fi through the C6, saved networks, USB Ethernet. Brings
   # esp_hosted, esp_wifi_remote, esp_usbh_asix and iot_usbh_ecm with it;
   # its idf_component.yml says why each is pinned or not.
   feckless_network_handler:
-    git: https://github.com/Sudrien/feckless-network-handler-for-m5tab5.git
-    version: "v0.2.2"
+    git: https://github.com/Sudrien/feckless-libs-for-m5tab5.git
+    path: components/feckless_network_handler
+    version: "v0.2.0"
 
-  # Class drivers the two libraries require by name and do not fetch (the
-  # player vendors fixed copies of both). Mass storage is used here, for
-  # maps on a USB drive; USB audio only because feckless-drivers links it.
+  # The mass storage class driver, which feckless_storage_handler
+  # requires by name and does not fetch (the player vendors a fixed
+  # copy), for maps on a USB drive. usb_host_uac, which feckless_drivers
+  # links, is no longer here: since feckless-libs v0.2.0 the drivers'
+  # manifest pins 1.5.0.
   espressif/usb_host_msc: "^1.1.0"
-  espressif/usb_host_uac: "^1.5.0"
