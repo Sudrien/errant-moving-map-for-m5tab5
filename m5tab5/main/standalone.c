@@ -12,12 +12,14 @@
  * host's power; the USB host before storage, which registers mass
  * storage as a class with it; storage; then the port, which powers
  * USB-A. The map finds the card and the drive mounted and NVS up, and
- * starts the network itself. Its own board inits return ESP_OK when run
- * again.
+ * -- 0046 -- the network up to be asked for (feckless_net_start(), feckless-libs'
+ * 6005), before the port, so USB Ethernet's class is installed with the
+ * rest. Its own board inits return ESP_OK when run again.
  */
 #include <stdint.h>
 
 #include "esp_log.h"
+#include "feckless_net.h"
 #include "feckless_abi.h"
 #include "nvs_flash.h"
 #include "storage.h"
@@ -47,6 +49,15 @@ void app_main(void)
         .powered        = usbhost_powered,
     };
     ESP_ERROR_CHECK(storage_init(&usb));
+    /* 0046: Defeatist's list of saved networks, which the map has always
+     * read ("defeatist"), so a network joined in either is known here. */
+    const feckless_net_start_t net = {
+        .exp2                  = tab5io_exp2(),
+        .usb_register_class    = usbhost_register_class,
+        .usb_set_config_select = usbhost_set_config_select,
+        .nvs_ns                = "defeatist",
+    };
+    feckless_net_start(&net);
     usbhost_start();
 
     int ret = feckless_abi_run(elf_start, (size_t)(elf_end - elf_start));

@@ -59,7 +59,6 @@
 #include "feckless_abi.h"            /* 0043 */
 #include "feckless_abi_network.h"
 #include "feckless_abi_storage.h"
-#include "ethcfg.h"                 /* 0045 */
 #include "feckless_net.h"
 #include "wifi.h"
 #include "wifistore.h"
@@ -120,9 +119,9 @@ static const char *TAG = "errant";
 #define COL_TRUST_ODD   RGB(140, 95, 10)
 #define COL_TRUST_BAD   RGB(150, 25, 25)
 
-/* The NVS namespace saved networks are read from: defeatist's, so a
- * network joined there is joined here (0007 shares the partition). */
-#define NETS_NVS_NS     "defeatist"
+/* The saved networks are defeatist's list, so a network joined there is
+ * joined here (0007 shares the partition); since 0046 the launcher opens
+ * it, standalone.c when this is the .bin. */
 
 /* Where the network's tile cache lives. The original's was /t
  * (original/tilecache.cpp CACHE_DIR); dotted and hidden since 0023, as
@@ -1701,33 +1700,22 @@ static bool hook_portal_running(void) { return setup_owns_radio() || portal_runn
 
 static void net_start(void)
 {
-    /* 0043: NVS is the launcher's, up before this runs -- standalone.c's
-     * when this is the .bin, which does not erase it either. */
-    wifistore_init(NETS_NVS_NS);
-    ESP_LOGI(TAG, "%d saved network%s (from %s's list)", wifistore_count(),
-             wifistore_count() == 1 ? "" : "s", NETS_NVS_NS);
+    /* 0046: the network is the launcher's -- standalone.c's when this is
+     * the .bin -- brought up with feckless_net_start() (feckless-libs' 6005): the
+     * saved networks, Defeatist's list, Ethernet's class and its
+     * configuration selector, the radio's task. What is the map's is its
+     * policy: whether the radio is wanted, NTP, the portal. The
+     * launcher's USB hook is kept (usb_register_class NULL). */
+    ESP_LOGI(TAG, "%d saved network%s (the launcher's list)", wifistore_count(),
+             wifistore_count() == 1 ? "" : "s");
     static const feckless_net_hooks_t hooks = {
         .ntp_enabled        = want_ntp,
         .wifi_enabled       = want_wifi,
         .portal_running     = hook_portal_running,
         .portal_stop        = portal_stop,
-        .usb_register_class = usbhost_register_class,
     };
     feckless_net_set_hooks(&hooks);
-    /* 0045: which configuration a Realtek RTL8152/8153 gets. It comes up
-     * in a vendor configuration and speaks CDC-ECM in its second; the
-     * drivers ask the application, and Defeatist has always answered
-     * with the network handler's ethcfg_select(). Errant never did, so
-     * the adapter enumerated in its first and iot_usbh_ecm logged "No ECM
-     * interface found for device VID: 0BDA, PID: 8152, ignore it" -- seen
-     * under Avoidant, and so before 0043 as well. The drivers read it at
-     * each enumeration, and ethernet_init()'s class cycles the port
-     * below, so an adapter already attached meets it. */
-    usbhost_set_config_select(ethcfg_select);
-    wifi_init(tab5io_exp2());
-    /* 0043: after usbhost_start() now, the launcher's; the port is cycled for it. */
-    if (ethernet_init() != ESP_OK)
-        ESP_LOGW(TAG, "no USB Ethernet this boot");
+    if (!feckless_net_started()) ESP_LOGW(TAG, "the launcher has not started the network");
 }
 
 /* ---- day and night ---- */

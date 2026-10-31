@@ -1420,3 +1420,21 @@ Built in m5tab5/ with ESP-IDF v6.1 and the component manager off:
 `feckless_abi: 213 symbols`, one more (`usbhost_set_config_select`, in
 the core list; `ethcfg_select()` is inline, so in the ELF). Not on a
 Tab5.
+
+### 0046 -- the network is the launcher's
+
+feckless-libs' 6005: the board's owner brings the network up with
+`feckless_net_start()`, as it does storage -- the saved networks
+(Defeatist's list, as ever), Ethernet's class and the configuration
+selector 0045 set, the radio's task -- before the USB port comes up, so
+Ethernet no longer registers late and cycles the port. `net_start()`
+here keeps the map's part, its policy: whether the radio is wanted, NTP,
+the portal, set with `feckless_net_set_hooks()` and the launcher's USB
+hook kept. `main/standalone.c` calls `feckless_net_start()` for the
+.bin. Built in m5tab5/ with ESP-IDF v6.1 and the component manager off,
+against 6005: `feckless_abi: 208 symbols, all in feckless_abi_v1 +
+feckless_abi_network_v1 + feckless_abi_storage_v2` (wifi_init,
+ethernet_init, wifistore_init and the USB calls gone,
+feckless_net_started added), the .bin 0x1ee220. Needs a launcher with
+6005, Avoidant's 0043; on one without, the map logs that the launcher
+has not started the network, and has none. Not on a Tab5.
