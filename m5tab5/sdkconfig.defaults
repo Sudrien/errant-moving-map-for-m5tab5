@@ -68,3 +68,21 @@ CONFIG_EH_HOST_PORT_DMA_PREFER_SPIRAM=y
 CONFIG_MBEDTLS_CERTIFICATE_BUNDLE=y
 CONFIG_MBEDTLS_HARDWARE_ECDSA_SIGN=n
 CONFIG_MBEDTLS_HARDWARE_ECDSA_VERIFY=n
+
+# 0043: the map is an ELF the firmware loads (elf/, and feckless_abi's
+# checks, which fail the build without these two). esp_elf puts it in
+# PSRAM, which the P4 can execute from; memory protection off, as
+# elf_loader's PSRAM examples have it. CONFIG_UAC_FREQ_NUM_MAX, which
+# feckless_abi warns without, is compiled into the USB audio driver the
+# drivers link, though nothing here uses USB audio.
+CONFIG_ELF_LOADER_LOAD_PSRAM=y
+CONFIG_ESP_SYSTEM_MEMPROT_FEATURE=n
+CONFIG_UAC_FREQ_NUM_MAX=8
+# 0043: the ABI's network section holds both sides to one configuration
+# where an app lays out a struct the launcher reads (feckless-libs' 6004);
+# this is the one value here that was not already IDF's default. The
+# portal does not use WebSockets; Defeatist's remote does, and a launcher
+# serves both. And 16 sockets, which the section recommends: the portal's
+# server, the tile client and DNS share the launcher's.
+CONFIG_HTTPD_WS_SUPPORT=y
+CONFIG_LWIP_MAX_SOCKETS=16

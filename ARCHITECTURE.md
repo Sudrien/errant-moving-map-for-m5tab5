@@ -1341,3 +1341,37 @@ sdkconfig with CONFIG_AIMLESS_TILE_BASE set to a test address came out
 of the build with CONFIG_ERRANT_TILE_BASE at that address, and the
 image holds it, beside /sd/.aimless.waypoints.dat.
 `make -C m5tab5/test` passes. Not on a Tab5.
+
+### 0043 -- the map as an ELF on the feckless ABI, and a standalone .bin
+
+Lothesome's, Unprofitable Mahjong's and Spurious's shape. `elf/` builds
+main/'s sources -- the world tile and the BMI270 image embedded as before
+-- into `errant_map.app.elf`, with mapcore and cJSON linked in and
+everything else taken from a launcher: the feckless ABI's core list
+(GPIO, UART and I2C devices since feckless-libs' 6002, for the GNSS and
+the IMU), its storage section, version 2 with fast seek for ffread.c's
+cluster maps, and its network section (6004). `app_main()` is the ELF's
+and requires the ABI and both sections first.
+
+The launcher's share moves to `main/standalone.c`, the .bin's app_main:
+NVS (still not erased on a failure, as net_start() had it), the USB host
+and storage, in Avoidant's order, then the embedded ELF. The map starts
+the network itself: `wifi_init()` and `ethernet_init()` are the app's.
+USB Ethernet now registers its class after the port is up, which the
+drivers allow by cycling the port's power. wifijoin.c's PSK is the
+network handler's `wifi_psk()` (6003), so the ELF takes nothing of Mbed
+TLS. libversions.h moves to `elf/CMakeLists.txt`.
+
+Every feckless component at v0.6.0, with feckless_abi,
+feckless_abi_storage and feckless_abi_network. sdkconfig.defaults has
+what feckless_abi requires and recommends, and CONFIG_HTTPD_WS_SUPPORT=y,
+the one value the network section holds both sides to that was not
+already the default here, and 16 lwIP sockets, which it recommends. CI
+publishes the .elf beside the two .bins.
+
+Built in m5tab5/ with ESP-IDF v6.1 and the component manager off,
+against feckless-libs with 6001-6004: `feckless_abi: 212 symbols, all
+in feckless_abi_v1 + feckless_abi_network_v1 + feckless_abi_storage_v2`,
+an ELF of 154220 bytes (the world tile not fetched in that build), and
+the .bin 0x1edec0, no warnings. `dependencies.lock` not updated; `rm
+sdkconfig`. Not on a Tab5.

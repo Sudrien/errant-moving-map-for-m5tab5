@@ -46,18 +46,19 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/semphr.h"
 #include "freertos/task.h"
-#include "nvs_flash.h"
 
 #include "gfx.h"
 #include "lcd.h"
 #include "storage.h"
-#include "storage_io.h"
 #include "rtc8130.h"
 #include "tab5io.h"
 #include "touch.h"
 #include "usbhost.h"
 
 #include "ethernet.h"
+#include "feckless_abi.h"            /* 0043 */
+#include "feckless_abi_network.h"
+#include "feckless_abi_storage.h"
 #include "feckless_net.h"
 #include "wifi.h"
 #include "wifistore.h"
@@ -1699,13 +1700,8 @@ static bool hook_portal_running(void) { return setup_owns_radio() || portal_runn
 
 static void net_start(void)
 {
-    esp_err_t err = nvs_flash_init();
-    if (err != ESP_OK) {
-        /* Not erased: a program that wipes the saved networks because it
-         * could not read them is worse than one that runs without them. */
-        ESP_LOGE(TAG, "nvs_flash_init: %s; no saved networks this boot",
-                 esp_err_to_name(err));
-    }
+    /* 0043: NVS is the launcher's, up before this runs -- standalone.c's
+     * when this is the .bin, which does not erase it either. */
     wifistore_init(NETS_NVS_NS);
     ESP_LOGI(TAG, "%d saved network%s (from %s's list)", wifistore_count(),
              wifistore_count() == 1 ? "" : "s", NETS_NVS_NS);
@@ -1718,7 +1714,7 @@ static void net_start(void)
     };
     feckless_net_set_hooks(&hooks);
     wifi_init(tab5io_exp2());
-    /* Before usbhost_start(), like every class on the port. */
+    /* 0043: after usbhost_start() now, the launcher's; the port is cycled for it. */
     if (ethernet_init() != ESP_OK)
         ESP_LOGW(TAG, "no USB Ethernet this boot");
 }
@@ -2489,6 +2485,13 @@ static void trust_step(const gnss_fix_t *fix)
 
 void app_main(void)
 {
+    /* 0043: tie the ELF to the launcher's ABI and the two sections it
+     * takes from; a launcher without one refuses it before any of this
+     * runs. */
+    feckless_abi_require();
+    feckless_abi_require_storage();
+    feckless_abi_require_network();
+
     {
         const esp_app_desc_t *d = esp_app_get_description();
         ESP_LOGW(TAG, "=== Errant Moving Map === %s, IDF %s, built %s %s",
@@ -2549,20 +2552,14 @@ void app_main(void)
     world_draw();
     draw_message("Errant Moving Map", "looking for maps");
 
-    /* The card, and a USB drive on the USB-A port, which feckless-storage
-     * registers with the drivers' USB host before the port comes up. */
-    ESP_ERROR_CHECK(usbhost_init(tab5io_exp2()));
-    storage_io_init();
-    static const storage_usb_t usb = {
-        .register_class = usbhost_register_class,
-        .set_power      = usbhost_set_power,
-        .powered        = usbhost_powered,
-    };
-    ESP_ERROR_CHECK(storage_init(&usb));
+    /* 0043: the card, and a USB drive on the USB-A port, are the
+     * launcher's, mounted before this runs -- standalone.c's when this is
+     * the .bin. USB Ethernet registers its class after the port is up,
+     * which the drivers allow: the port's power is cycled so a cable
+     * already attached enumerates again and meets it. */
     wp_read();
     portal_init();
     net_start();
-    usbhost_start();
 
     /* The receiver searches while everything else comes up. */
     if (!gnss_start(GNSS_P4_RX_PIN, GNSS_P4_TX_PIN, GNSS_BAUD, GNSS_PPS_PIN, 0, 5))

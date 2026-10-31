@@ -52,6 +52,15 @@ against that repository, under its rules, and this one picks it up by
 moving the tag in `main/idf_component.yml` -- one tag, the same for all
 four.
 
+**The map is an ELF built against the feckless ABI** (0043), which is
+feckless_abi's `exports.txt` and its storage and network sections in
+feckless-libs-for-m5tab5. A call from the map to anything outside them
+fails the build: link it into the ELF (`ELF_COMPONENTS` in
+`elf/CMakeLists.txt`, as mapcore and cJSON are), or it is a patch against
+that repository first. main/ is built in `elf/`; `main/standalone.c` is
+the .bin's app_main, which brings NVS, the USB host and storage up as a
+launcher does, and only loads it.
+
 **`components/mapcore/` is the original's code, unchanged.** It was
 copied byte for byte from `original/`. A fix to it is a patch here like
 any other, but it says it is departing from the original and why, so

@@ -8,9 +8,8 @@ include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 idf_build_set_property(MINIMAL_BUILD ON)
 project(errant_moving_map_for_m5tab5)
 
-# libversions.h, the licences page's list (0037): generated from the lock,
-# the BMI270 pin and the world tile's source when the build is
-# configured -- after project(), which is when main does those fetches.
-idf_component_get_property(main_lib main COMPONENT_LIB)
-include(${CMAKE_CURRENT_LIST_DIR}/cmake/libversions.cmake)
-target_include_directories(${main_lib} PRIVATE "${LIBVERSIONS_DIR}")
+# 0043: the map itself is an ELF built against the feckless ABI, by elf/;
+# this build is main/standalone.c, which brings storage up, embeds that
+# ELF and loads it. libversions.h is elf/'s, with the code that includes
+# it. On its own:
+#   idf.py -C elf -B build-elf build

@@ -113,8 +113,13 @@ jobs:
           idf.py merge-bin
           mv build/merged-binary.bin "build/errant_${NAME}_moving_map_for_m5tab5_standalone.bin"
           mv build/errant_moving_map_for_m5tab5.bin "build/errant_${NAME}_moving_map_for_m5tab5.bin"
+          # 0043: the map alone, for a launcher (Avoidant) to run with no
+          # install. The .bins already contain this ELF; what it may take
+          # from a launcher is feckless_abi's and its storage and network
+          # sections', at the tag in main/idf_component.yml.
+          cp build/elf/errant_map.app.elf "build/errant_${NAME}_moving_map_for_m5tab5.elf"
 
-      # A signed record that these two files, by their SHA-256, were
+      # A signed record that these three files, by their SHA-256, were
       # built by this workflow from this commit. Stored with the
       # repository, not in the files, which flash as before. Every run
       # attests, so a downloaded artifact can be checked too:
@@ -125,6 +130,7 @@ jobs:
           subject-path: |
             m5tab5/build/errant_${{ steps.ver.outputs.name }}_moving_map_for_m5tab5_standalone.bin
             m5tab5/build/errant_${{ steps.ver.outputs.name }}_moving_map_for_m5tab5.bin
+            m5tab5/build/errant_${{ steps.ver.outputs.name }}_moving_map_for_m5tab5.elf
 
       - name: Archive build output artifacts
         uses: actions/upload-artifact@v4
@@ -133,6 +139,7 @@ jobs:
           path: |
             m5tab5/build/errant_${{ steps.ver.outputs.name }}_moving_map_for_m5tab5_standalone.bin
             m5tab5/build/errant_${{ steps.ver.outputs.name }}_moving_map_for_m5tab5.bin
+            m5tab5/build/errant_${{ steps.ver.outputs.name }}_moving_map_for_m5tab5.elf
 
       # The lock the component manager resolved, to be read and
       # committed if it differs; on a 6.1 run, the only IDF 6 lock there
@@ -159,3 +166,4 @@ jobs:
           files: |
             m5tab5/build/errant_${{ steps.ver.outputs.name }}_moving_map_for_m5tab5_standalone.bin
             m5tab5/build/errant_${{ steps.ver.outputs.name }}_moving_map_for_m5tab5.bin
+            m5tab5/build/errant_${{ steps.ver.outputs.name }}_moving_map_for_m5tab5.elf

@@ -1,3 +1,53 @@
+# 0043: one directory, two builds. ../elf/ sets ERRANT_ELF and builds the
+# map into an ELF for esp_elf, checked against the feckless ABI -- the
+# fetches below are its, since the files go into the ELF; the top level
+# builds standalone.c, runs ../elf/ and embeds what it made. The shape is
+# Lothesome's, Unprofitable Mahjong's and Spurious's.
+idf_build_get_property(_errant_elf ERRANT_ELF)
+
+if(NOT _errant_elf)
+    idf_component_register(
+        SRCS "standalone.c"
+        PRIV_REQUIRES feckless_abi feckless_abi_storage feckless_abi_network nvs_flash
+                      feckless_drivers feckless_storage_handler
+    )
+    if(NOT CMAKE_BUILD_EARLY_EXPANSION)
+        include(ExternalProject)
+        idf_build_get_property(_idf_path IDF_PATH)
+        idf_build_get_property(_target IDF_TARGET)
+        idf_build_get_property(_build_dir BUILD_DIR)
+        idf_build_get_property(_sdkconfig SDKCONFIG)
+        idf_build_get_property(_project_dir PROJECT_DIR)
+        idf_build_get_property(_project_ver PROJECT_VER)
+
+        set(_elf_dir "${_build_dir}/elf")
+        set(_elf "${_elf_dir}/errant_map.app.elf")
+
+        externalproject_add(errant_elf
+            SOURCE_DIR "${_project_dir}/elf"
+            BINARY_DIR "${_elf_dir}"
+            CMAKE_ARGS -DIDF_PATH=${_idf_path}
+                       -DIDF_TARGET=${_target}
+                       -DSDKCONFIG=${_elf_dir}/sdkconfig
+                       -DERRANT_HOST_SDKCONFIG=${_sdkconfig}
+                       -DERRANT_PROJECT_VER=${_project_ver}
+            CMAKE_GENERATOR "Unix Makefiles"
+            BUILD_COMMAND make elf
+            BUILD_ALWAYS 1
+            BUILD_BYPRODUCTS "${_elf}"
+            INSTALL_COMMAND ""
+        )
+
+        # elf/ checked it against the ABI as it linked it; embedding
+        # waits for that.
+        add_dependencies(${COMPONENT_LIB} errant_elf)
+
+        # elf_loader's: 4-byte aligned, as esp_elf_relocate() wants it.
+        elf_embed_aligned_binary(${COMPONENT_LIB} "${_elf}" BINARY)
+    endif()
+    return()
+endif()
+
 # cJSON, for M5Launcher's config.conf: IDF's own `json` on 5.x, the
 # registry's espressif/cjson on 6.x, which moved it out of the tree
 # (idf_component.yml, behind an idf_version rule). Defeatist's 6031.
@@ -63,6 +113,7 @@ idf_component_register(
     INCLUDE_DIRS "."
     EMBED_FILES "${ERRANT_WORLD}" "${ERRANT_BMI270}"
     REQUIRES mapcore feckless_drivers feckless_graphics_handler feckless_storage_handler feckless_network_handler
+             feckless_abi feckless_abi_storage feckless_abi_network   # 0043
              esp_driver_uart esp_driver_gpio esp_driver_i2c esp_timer fatfs esp_app_format esp_http_client mbedtls nvs_flash
              esp_http_server lwip app_update spi_flash ${ERRANT_JSON}
 )
