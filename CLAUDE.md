@@ -30,6 +30,23 @@ does not repeat it.
 
     git format-patch --start-number 6 -1 -o out/
 
+**The `umode` branch has a numbering of its own: `u-errant-NNNN`.**
+Its patches are named `u-errant-0001-<subject>.patch`, `u-errant-0002-...`,
+and apply to the `umode` branch, not to main. They are numbered from
+`--start-number 1` and renamed with the prefix; the subject has neither.
+Their `ARCHITECTURE.md` entries are under "The `umode` branch" at the end
+of the file, headed `u-errant-NNNN`, so they cannot clash with a patch
+that lands on main meanwhile. Look at the last `u-errant` entry for the
+next number. feckless-libs, Avoidant, Spurious and Defeatist have the same
+arrangement (`u-feckless-NNNN`, `u-avoidant-NNNN`, ...). When the branch
+merges, its entries move into the series of the release it goes into.
+
+**On that branch the map's own manifest and lock stay on a tag.** What
+follows feckless-libs' `umode` branch is a project of its own under
+`m5tab5/` (`boxed/`), with its own `idf_component.yml` and
+`dependencies.lock`, so work on the box cannot move a pin that a release
+is built from.
+
 **Patches are cumulative.** Each applies on top of what is here. Never a
 rewritten copy of a file, never a corrected reissue of a patch already
 applied -- a follow-up instead.

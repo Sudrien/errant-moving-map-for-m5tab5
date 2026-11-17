@@ -1438,3 +1438,57 @@ ethernet_init, wifistore_init and the USB calls gone,
 feckless_net_started added), the .bin 0x1ee220. Needs a launcher with
 6005, Avoidant's 0043; on one without, the map logs that the launcher
 has not started the network, and has none. Not on a Tab5.
+
+
+## The `umode` branch
+
+The map as an app in a box: RISC-V user mode, one block of PSRAM that the
+PMP grants it and nothing else, every call out of it an `ecall` the
+launcher checks -- feckless-libs' `umode` branch (`feckless_umode`,
+`feckless_box_libc`, `feckless_box_calls`), run by Avoidant's `umode`
+branch. Numbered `u-errant-NNNN` (CLAUDE.md). Spurious's reader and
+Defeatist's player are there already; this is the map's turn.
+
+### u-errant-0001 -- opens the branch: what is known
+
+Nothing built by this patch: the numbering (CLAUDE.md), and where the map
+stands, counted from a real link -- main/'s sources as they are, linked
+for a box against feckless-libs' umode branch at u-feckless-0061 (ESP-IDF
+6.1.1, riscv32-esp-elf 15.2.0).
+
+The map's ELF imports 148 names once the part of libc a boxed app carries
+itself is linked in. A box answers 75 of them: the panel, gfx, touch, the
+backlight, the RTC, storage (FatFs with fast seek, stdio, the storage
+handler), threads, FreeRTOS's locks, time, the log. The other 73:
+
+| what | names | so, until a box answers it |
+|---|---|---|
+| the network handler: `feckless_net_*`, `net_*`, `wifi_*`, `wifistore_*` | 19 | no radio, no saved networks |
+| esp_http_client and the certificate bundle | 10 | no remote tiles |
+| esp_http_server | 10 | no setup portal |
+| lwIP sockets, `close` | 7 | no portal DNS |
+| esp_netif, `esp_wifi_get_mac` | 6 | no access point for the portal |
+| esp_partition, `esp_ota_get_running_partition` | 7 | nothing imported from M5Launcher |
+| the UART driver | 6 | no GNSS |
+| I2C devices | 5 | no accelerometer |
+| GPIO: a pin's configuration and its interrupt | 3 | no PPS count |
+
+Three of those are not calls a box can simply pass on. The portal's
+handlers (`httpd_register_uri_handler()`), the network's hooks
+(`feckless_net_set_hooks()`) and the PPS interrupt
+(`gpio_isr_handler_add()`) are the app's functions called by the
+launcher, and a launcher must never call into a box in machine mode: each
+needs the launcher to run the app's function in a window, as it runs a
+thread's.
+
+The order intended: the map in a box with all 73 absent (u-errant-0002);
+then the box's side in feckless-libs, the drivers first -- UART, I2C
+devices, GPIO -- since without the UART the map has no position; then the
+network.
+
+**Memory.** The map's four 1280 px tiles are 13.1 MB, the world at boot
+3.3 MB more, the render scratch, the coarse tiles and the Wi-Fi table
+about 2 MB. Avoidant's box is the largest free PSRAM block less 2 MB, at
+most 16 MB (its u-avoidant-0001): the tiles fit, the world does not, and
+what is left after them is thin. Its limit is its own and wants raising
+for the map.
