@@ -1657,3 +1657,29 @@ log should show: `standalone: the map in a box of N KB` (N near 24576
 if the PSRAM is free), `=== Errant Moving Map ===`, `gnss: UART1 at
 38400 baud`, and `the launcher has not started the network` from
 absent.c; `standalone: the map ended: ...` only if it stops.
+
+### u-errant-0006 -- the manifest names feckless_nvs_handler
+
+u-errant-0005's first build with the component manager stopped at the
+configure:
+
+    Failed to resolve component 'feckless_nvs_handler' required by component
+    'feckless_box_calls': unknown name.
+
+feckless_box_calls requires its sibling by name (a boxed app's NVS,
+u-feckless-0053), and a sibling required by name is only fetched if the
+app's manifest names it; 0005 added the box's three components and not
+this one. `main/idf_component.yml` now has it, on the `umode` branch
+with the rest.
+
+Not seen by 0005's check because the session's build, with the component
+manager off, was given every feckless component in one directory, named
+or not. This build was given only the fourteen the manifest names: the
+error reproduces without the entry and is gone with it. Read across the
+same fourteen, no other sibling is required and unnamed
+(`feckless_camera` is optional to feckless_box_calls, and not wanted).
+
+*Checked:* a clean ESP-IDF 6.1.1 build of `m5tab5/` with only the
+manifest's feckless components available: both of the ELF's checks pass
+(87 imports) and the .bin links, 0x1aa0b0 bytes. *Not checked:* a build
+with the component manager; a board. The lock gains the component.
