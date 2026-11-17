@@ -1545,3 +1545,30 @@ errant.c (it is inert without `ERRANT_BOXED`); this project's
 `dependencies.lock`, which the first configure with the component manager
 writes, and whose diff is to be read before it is committed; whether
 Avoidant's box holds the map (u-errant-0001's arithmetic says barely).
+
+### u-errant-0003 -- boxed: the receiver and the accelerometer are the box's
+
+feckless-libs' u-feckless-0062 answers a UART, I2C devices and a pin's
+configuration in a box, so `boxed/main/absent.c` loses the six UART
+calls, the five I2C calls and `gpio_config()`: the boxed map reads the
+real receiver on UART1 (GPIO6/7) and the real BMI270 at 0x68, both of
+which that patch's deny lists leave to an app. No source of the map's
+changes.
+
+Still absent: the network (52 names), flash partitions (7), and the two
+GPIO interrupt calls -- so no PPS count. `gnss_start()` already logs
+that and goes on (`PPS on GPIO51: ...; counting none`); `trust.c` then
+judges the clock from the fix and the RTC without the pulse.
+
+In a box the GNSS thread's `uart_read_bytes(…, 20 ms)` is a host call
+each time, about fifty a second; the IMU's reads likewise. Neither is
+drawn-per-pixel work, and nothing was changed for it.
+
+*Checked:* the same build as u-errant-0002, against feckless-libs' umode
+branch with u-feckless-0062 applied:
+
+    -- feckless_abi: 87 symbols, all in feckless_abi_v1 + feckless_abi_box_v1 + feckless_abi_storage_v2
+    -- feckless_box_libc: boxed, 87 imports, none of them in-app names, all answered by the box
+
+*Not checked:* a board. **Needs u-feckless-0062 pushed first**: against
+the branch without it, boxcheck fails this build on the twelve names.

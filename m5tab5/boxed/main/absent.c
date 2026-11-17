@@ -2,11 +2,10 @@
  *
  * u-errant-0002: what a box does not answer, as the app's own functions.
  *
- * The boxed ELF is the map's sources, so it still calls the network, the
- * GNSS's UART, the IMU's I2C device, a GPIO interrupt and the flash's
- * partitions, which a feckless box (feckless-libs' umode branch, to
- * u-feckless-0061) has no host call for. Each is defined here to fail the
- * way the map already copes with on a trusted run:
+ * The boxed ELF is the map's sources, so it still calls the network, a
+ * GPIO interrupt and the flash's partitions, which a feckless box
+ * (feckless-libs' umode branch) has no host call for. Each is defined
+ * here to fail the way the map already copes with on a trusted run:
  *
  *   the network      not started, down and never coming up: no radio, no
  *                    saved networks, no sockets, no HTTP client or server.
@@ -14,14 +13,14 @@
  *                    network is saved: tiles from the card or a USB drive,
  *                    no remote tiles, no setup portal, no Wi-Fi location,
  *                    no NTP (so no clock check but the RTC's).
- *   the UART         no driver: gnss_start() says so and the map has no
- *                    position but the last one it saved.
- *   the I2C device   nothing answers at the BMI270's address: no
- *                    accelerometer, and the map dims on touch and distance
- *                    alone, as it does without the configuration image.
- *   GPIO             no pin configured and no interrupt: no PPS count.
+ *   GPIO interrupts  no service and no handler: no PPS count. (The pin's
+ *                    configuration is the box's since u-errant-0003.)
  *   partitions       none: no M5Launcher in the factory slot, so nothing
  *                    to import from it.
+ *
+ * u-errant-0003: the UART driver and I2C devices were here until
+ * feckless-libs' u-feckless-0062 answered them in a box; the GNSS and the
+ * accelerometer are the real ones now.
  *
  * Each of these comes out of this file when a box answers it -- the box's
  * call then replaces it at the next build, and boxcheck says which are
@@ -37,8 +36,6 @@
 #include "esp_err.h"
 
 #include "driver/gpio.h"
-#include "driver/i2c_master.h"
-#include "driver/uart.h"
 #include "esp_crt_bundle.h"
 #include "esp_http_client.h"
 #include "esp_http_server.h"
@@ -46,8 +43,6 @@
 #include "esp_ota_ops.h"
 #include "esp_partition.h"
 #include "esp_wifi.h"
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
 #include "lwip/inet.h"
 #include "lwip/sockets.h"
 
@@ -62,97 +57,7 @@ static bool empty(char *out, size_t n)
     return false;
 }
 
-/* ---- the GNSS's UART --------------------------------------------------- */
-
-esp_err_t uart_driver_install(uart_port_t uart_num, int rx_buffer_size, int tx_buffer_size,
-                              int queue_size, QueueHandle_t *uart_queue, int intr_alloc_flags)
-{
-    (void)uart_num; (void)rx_buffer_size; (void)tx_buffer_size;
-    (void)queue_size; (void)uart_queue; (void)intr_alloc_flags;
-    return ESP_ERR_NOT_SUPPORTED;
-}
-
-esp_err_t uart_param_config(uart_port_t uart_num, const uart_config_t *uart_config)
-{
-    (void)uart_num; (void)uart_config;
-    return ESP_ERR_NOT_SUPPORTED;
-}
-
-esp_err_t _uart_set_pin6(uart_port_t uart_num, int tx_io_num, int rx_io_num, int rts_io_num,
-                         int cts_io_num, int dtr_io_num, int dsr_io_num)
-{
-    (void)uart_num; (void)tx_io_num; (void)rx_io_num; (void)rts_io_num;
-    (void)cts_io_num; (void)dtr_io_num; (void)dsr_io_num;
-    return ESP_ERR_NOT_SUPPORTED;
-}
-
-/* Never reached -- gnss_start() stops at the install -- but a reader that
- * was would spin on an instant -1, so it waits as the driver would. */
-int uart_read_bytes(uart_port_t uart_num, void *buf, uint32_t length, TickType_t ticks_to_wait)
-{
-    (void)uart_num; (void)buf; (void)length;
-    vTaskDelay(ticks_to_wait ? ticks_to_wait : 1);
-    return -1;
-}
-
-int uart_write_bytes(uart_port_t uart_num, const void *src, size_t size)
-{
-    (void)uart_num; (void)src; (void)size;
-    return -1;
-}
-
-esp_err_t uart_wait_tx_done(uart_port_t uart_num, TickType_t ticks_to_wait)
-{
-    (void)uart_num; (void)ticks_to_wait;
-    return ESP_ERR_NOT_SUPPORTED;
-}
-
-/* ---- the IMU's I2C device ---------------------------------------------- */
-
-esp_err_t i2c_master_probe(i2c_master_bus_handle_t bus_handle, uint16_t address, int xfer_timeout_ms)
-{
-    (void)bus_handle; (void)address; (void)xfer_timeout_ms;
-    return ESP_ERR_NOT_FOUND;
-}
-
-esp_err_t i2c_master_bus_add_device(i2c_master_bus_handle_t bus_handle,
-                                    const i2c_device_config_t *dev_config,
-                                    i2c_master_dev_handle_t *ret_handle)
-{
-    (void)bus_handle; (void)dev_config;
-    if (ret_handle) *ret_handle = NULL;
-    return ESP_ERR_NOT_SUPPORTED;
-}
-
-esp_err_t i2c_master_bus_rm_device(i2c_master_dev_handle_t handle)
-{
-    (void)handle;
-    return ESP_ERR_NOT_SUPPORTED;
-}
-
-esp_err_t i2c_master_transmit(i2c_master_dev_handle_t i2c_dev, const uint8_t *write_buffer,
-                              size_t write_size, int xfer_timeout_ms)
-{
-    (void)i2c_dev; (void)write_buffer; (void)write_size; (void)xfer_timeout_ms;
-    return ESP_ERR_NOT_SUPPORTED;
-}
-
-esp_err_t i2c_master_transmit_receive(i2c_master_dev_handle_t i2c_dev, const uint8_t *write_buffer,
-                                      size_t write_size, uint8_t *read_buffer, size_t read_size,
-                                      int xfer_timeout_ms)
-{
-    (void)i2c_dev; (void)write_buffer; (void)write_size;
-    (void)read_buffer; (void)read_size; (void)xfer_timeout_ms;
-    return ESP_ERR_NOT_SUPPORTED;
-}
-
-/* ---- GPIO: the PPS pin and its interrupt ------------------------------- */
-
-esp_err_t gpio_config(const gpio_config_t *pGPIOConfig)
-{
-    (void)pGPIOConfig;
-    return ESP_ERR_NOT_SUPPORTED;
-}
+/* ---- GPIO: the PPS pin's interrupt ------------------------------------- */
 
 esp_err_t gpio_install_isr_service(int intr_alloc_flags)
 {
