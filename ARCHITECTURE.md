@@ -1721,3 +1721,20 @@ This is a property of the library more than of the map -- "built into
 the app, never into a launcher", its CMakeLists.txt says -- and
 feckless-libs could keep itself out of a firmware's link for every app.
 Until it does, this.
+
+### u-errant-0008 -- 0007's workaround out
+
+feckless-libs' u-feckless-0063 (cfa96c9) has feckless_box_libc keep
+itself out of any build that is not an ELF's: its sources become one
+empty file there, and it links nothing. u-errant-0007's block at the end
+of `m5tab5/CMakeLists.txt`, which stripped the library from the
+firmware's link, is therefore taken out. Nothing else changes.
+
+*Checked:* ESP-IDF 6.1.1, component manager off, only the manifest's
+feckless components, against feckless-libs at cfa96c9, with the library
+in the firmware's requirements as the manager puts it: the configure says
+`feckless_box_libc: not an ELF's build, so nothing of it is linked`, the
+ELF passes both checks (87 imports) and the .bin links with no multiple
+definition. *Not checked:* a build with the component manager; a board.
+**Needs the lock to record cfa96c9 or later**: against an older
+feckless-libs this brings 0007's link errors back.
