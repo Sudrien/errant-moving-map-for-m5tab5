@@ -1572,3 +1572,24 @@ branch with u-feckless-0062 applied:
 
 *Not checked:* a board. **Needs u-feckless-0062 pushed first**: against
 the branch without it, boxcheck fails this build on the twelve names.
+
+### u-errant-0004 -- boxed: a quiet configure
+
+The first configure of `boxed/` with the component manager said
+
+    CMake Warning at managed_components/feckless_abi_network/CMakeLists.txt:92 (message):
+      feckless_abi_network: CONFIG_ESP_HTTPS_SERVER_ENABLE=y is needed by a
+      launcher: the section's feckless_https_start() calls httpd_ssl_start()
+
+It is feckless-libs' 8004 check, and by its own comment not an error for
+an app: a launcher without the option fails to link, an app links no
+server. The map's `sdkconfig.defaults` predates the check (main/ is on
+v0.6.1), and the session's builds had it too, filtered out of what was
+read. `boxed/CMakeLists.txt` now adds `CONFIG_ESP_HTTPS_SERVER_ENABLE=y`
+to the defaults it already writes for this project, as Avoidant and
+Defeatist have it; the map's own defaults are not touched. An existing
+`boxed/sdkconfig` keeps the old value: remove it once.
+
+*Checked:* a clean configure of `boxed/` has no CMake warning and the
+option set; the `elf` target builds, 87 imports, all answered. Not on a
+board.

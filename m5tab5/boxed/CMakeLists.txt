@@ -18,8 +18,16 @@ get_filename_component(_m5 "${CMAKE_CURRENT_LIST_DIR}/.." ABSOLUTE)
 # The map's configuration, so the sources compile as the map's do, and its
 # partition table by full path (the defaults name it relative to the
 # project, which is not this one).
+#
+# u-errant-0004: and CONFIG_ESP_HTTPS_SERVER_ENABLE, as a launcher has it.
+# feckless_abi_network (whose header errant.c includes) warns at configure
+# when it is off, because a launcher without it cannot link; this is an
+# app and links no server, so the warning was only noise -- but the map's
+# sdkconfig.defaults predates that check, and saying it here keeps this
+# project's configure quiet without touching the map's own defaults.
 file(WRITE "${CMAKE_BINARY_DIR}/sdkconfig.boxed.defaults"
-     "CONFIG_PARTITION_TABLE_CUSTOM_FILENAME=\"${_m5}/partitions.csv\"\n")
+     "CONFIG_PARTITION_TABLE_CUSTOM_FILENAME=\"${_m5}/partitions.csv\"\n"
+     "CONFIG_ESP_HTTPS_SERVER_ENABLE=y\n")
 set(SDKCONFIG_DEFAULTS "${_m5}/sdkconfig.defaults"
                        "${CMAKE_BINARY_DIR}/sdkconfig.boxed.defaults")
 
