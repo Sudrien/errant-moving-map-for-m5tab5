@@ -430,6 +430,16 @@ dependencies:
       path: components/feckless_network_handler
       type: git
     version: 7b9c5fe1f49174894a56768d439b41ba368effd1
+  feckless_nvs_handler:
+    component_hash: feb39438ed7d5c484b7dc4b239fa0fcd104206b02a775f59d4abc68f2784470b
+    dependencies:
+    - name: idf
+      version: '>=5.4.2'
+    source:
+      git: https://github.com/Sudrien/feckless-libs-for-m5tab5.git
+      path: components/feckless_nvs_handler
+      type: git
+    version: 7b9c5fe1f49174894a56768d439b41ba368effd1
   feckless_storage_handler:
     component_hash: 9900fcd72438bfd9099d658ef707e3dad8827688048df368b4006d006e66bb2f
     dependencies:
@@ -509,11 +519,12 @@ direct_dependencies:
 - feckless_drivers
 - feckless_graphics_handler
 - feckless_network_handler
+- feckless_nvs_handler
 - feckless_storage_handler
 - feckless_umode
 - idf
 - usb_host_msc
 - usb_host_uac
-manifest_hash: d0595b8d622cead0f3f0278989127afdd219c86caf419e32c3cde8e2ce5a5c26
+manifest_hash: b2abafbda4b9749cb093469aa6e30e9c04915dc26842f320710bfe6d980b2836
 target: esp32p4
 version: 3.0.0
