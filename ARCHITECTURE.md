@@ -1683,3 +1683,41 @@ same fourteen, no other sibling is required and unnamed
 manifest's feckless components available: both of the ELF's checks pass
 (87 imports) and the .bin links, 0x1aa0b0 bytes. *Not checked:* a build
 with the component manager; a board. The lock gains the component.
+
+### u-errant-0007 -- feckless_box_libc out of the firmware's link
+
+With 0006 the component manager's build configured, compiled, and
+stopped at the .bin's link:
+
+    multiple definition of `stderr'; esp-idf/esp_libc/libesp_libc.a(picolibc_init.c.obj): first defined here
+    multiple definition of `strerror'; ... libfeckless_box_libc.a(box_string.c.obj): first defined here
+
+and the same for `stdin`, `stdout`, `fgetc`, `getc`, `fputc`, `putc`.
+feckless_box_libc is the part of libc a boxed app carries in its own ELF;
+elf/ links it there. But one manifest serves both builds, so the
+component manager makes it a requirement of `main` in the firmware too,
+and ESP-IDF links every component of a build into the executable. Its
+objects are then taken wherever they come first for a symbol the
+firmware uses, and the toolchain's libc is pulled as well for the rest.
+Spurious's and Lothesome's .bins have the same component in the same
+place and link only because nothing in them asks for those names; this
+one has the network.
+
+`m5tab5/CMakeLists.txt` now takes feckless_box_libc off the firmware's
+executable and off every component of that build that names it, after
+`project()`. The ELF's build is elf/'s own project and is not touched:
+its two checks still pass, and it is where the library goes.
+
+The session's build has no component manager, so nothing put the library
+in the firmware and 0005 linked. *Checked* by adding it to
+standalone.c's requirements, as the manager does: the eight errors above
+reproduce exactly, and with this patch that build links, with no object
+of `libfeckless_box_libc.a` in the map. Then the tree as it is: a clean
+ESP-IDF 6.1.1 build, the ELF 87 imports all answered, the .bin 0x1aa100
+bytes, no warnings. *Not checked:* a build with the component manager;
+a board.
+
+This is a property of the library more than of the map -- "built into
+the app, never into a launcher", its CMakeLists.txt says -- and
+feckless-libs could keep itself out of a firmware's link for every app.
+Until it does, this.
