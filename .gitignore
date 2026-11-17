@@ -23,3 +23,10 @@ m5tab5/test/placestest
 m5tab5/test/motiontest
 m5tab5/test/trusttest
 m5tab5/test/wifiloctest
+# u-errant-0002: boxed, the map as a boxed ELF (m5tab5/boxed/README.md).
+# Its dependencies.lock is not listed: it records the commit of
+# feckless-libs' umode branch it was built with.
+/m5tab5/boxed/build/
+/m5tab5/boxed/sdkconfig
+/m5tab5/boxed/sdkconfig.old
+/m5tab5/boxed/managed_components/

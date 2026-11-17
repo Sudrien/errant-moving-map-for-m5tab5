@@ -1,0 +1,3 @@
+# u-errant-0002: the map's own settings (where remote tiles come from), so
+# main/'s sources find CONFIG_ERRANT_* here as they do there.
+rsource "../../main/Kconfig.projbuild"

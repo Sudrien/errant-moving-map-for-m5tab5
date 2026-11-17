@@ -1492,3 +1492,56 @@ about 2 MB. Avoidant's box is the largest free PSRAM block less 2 MB, at
 most 16 MB (its u-avoidant-0001): the tiles fit, the world does not, and
 what is left after them is thin. Its limit is its own and wants raising
 for the map.
+
+### u-errant-0002 -- boxed: the map in a box, offline first
+
+`m5tab5/boxed/`, a project of its own, as Defeatist's is: the map, main/'s
+sources, built into an ELF for a feckless box (`feckless_abi_box_elf()`).
+Its README says how to build it and what to look for. The firmware does
+not build it.
+
+- **The sources are main/'s, by path.** The project needs its own
+  manifest (feckless-libs' umode branch), which main/'s pinned one cannot
+  be, so it has its own `main` component listing ../../main's sources;
+  its CMakeLists.txt reads main/CMakeLists.txt and stops the configure if
+  the two lists differ, so a source added there cannot quietly become an
+  import here. The world tile and the BMI270 image are fetched into its
+  own build directory by the same two tools, and `Kconfig.projbuild` is
+  main/'s by `rsource`.
+- **One change to main/:** `app_main()` in errant.c requires the box
+  (`feckless_abi_require_box()`) in place of the network section when
+  built with `ERRANT_BOXED`, which only boxed/ defines. A launcher that
+  would run this ELF trusted has no `feckless_abi_box_v1` and refuses it.
+- **`boxed/main/absent.c`** is u-errant-0001's 73 names, every one a
+  library's, defined in the app to fail the way the map already copes
+  with: the network not started and never up, no UART driver, nothing at
+  the BMI270's address, no GPIO, no partitions. So the boxed map is the
+  offline map without a receiver: archives on the card or a USB drive,
+  touch, the RTC, the last saved position. Each name comes out of
+  absent.c when a box answers it.
+- **No privileged instruction.** The disassembly has nine CSR accesses,
+  all `csrs`/`csrsi fflags` (the FPU's flags, a user CSR), and no `ecall`
+  of its own.
+
+*Checked:* an ESP-IDF 6.1.1 build of `boxed/` with riscv32-esp-elf
+15.2.0, the `elf` target, against feckless-libs' umode branch at
+u-feckless-0061: both checks pass --
+
+    -- feckless_abi: 75 symbols, all in feckless_abi_v1 + feckless_abi_box_v1 + feckless_abi_storage_v2
+    -- feckless_box_libc: boxed, 75 imports, none of them in-app names, all answered by the box
+
+with no warnings. The image is 183 KB of code and rodata and 27 KB of
+data and bss (the world tile not fetched in that build: the session
+cannot reach its host; the BMI270 image was, 8192 bytes). The registry is
+not reachable from the session either, so its components came from GitHub
+with the component manager off -- esp-hosted-mcu at v3.0.10, the others
+at their repositories' heads (idf-extra-components, esp-iot-solution,
+esp-bsp, esp-usb, esp-protocols, esp-wifi-remote, Sudrien/esp_usbh_asix)
+-- each linked to what its manifest names, since without the manager
+nothing else does.
+
+*Not checked:* a board; ../elf/ and the firmware with the `#ifdef` in
+errant.c (it is inert without `ERRANT_BOXED`); this project's
+`dependencies.lock`, which the first configure with the component manager
+writes, and whose diff is to be read before it is committed; whether
+Avoidant's box holds the map (u-errant-0001's arithmetic says barely).
