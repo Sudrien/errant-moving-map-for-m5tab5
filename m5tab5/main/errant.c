@@ -59,9 +59,7 @@
 #include "feckless_abi.h"            /* 0043 */
 #include "feckless_abi_network.h"
 #include "feckless_abi_storage.h"
-#ifdef ERRANT_BOXED
 #include "feckless_box.h"          /* u-errant-0002 */
-#endif
 #include "feckless_net.h"
 #include "wifi.h"
 #include "wifistore.h"
@@ -2492,13 +2490,11 @@ void app_main(void)
      * runs. */
     feckless_abi_require();
     feckless_abi_require_storage();
-#ifdef ERRANT_BOXED
-    /* u-errant-0002: built for a box (boxed/), which has no network
-     * section yet: boxed/main/absent.c is the network, down. */
+    /* u-errant-0005: and to a box -- a launcher that would run it trusted
+     * refuses it by this name; Avoidant's umode branch and this firmware's
+     * standalone.c run it in one. A box has no network section yet, so the
+     * map no longer requires it: absent.c is the network, down. */
     feckless_abi_require_box();
-#else
-    feckless_abi_require_network();
-#endif
 
     {
         const esp_app_desc_t *d = esp_app_get_description();

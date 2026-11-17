@@ -1,8 +1,10 @@
 /* SPDX-License-Identifier: MIT
  *
  * u-errant-0002: what a box does not answer, as the app's own functions.
+ * (In boxed/main/ until u-errant-0005 made the map's one build the boxed
+ * one.)
  *
- * The boxed ELF is the map's sources, so it still calls the network, a
+ * The map still calls the network, a
  * GPIO interrupt and the flash's partitions, which a feckless box
  * (feckless-libs' umode branch) has no host call for. Each is defined
  * here to fail the way the map already copes with on a trusted run:

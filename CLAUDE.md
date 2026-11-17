@@ -41,11 +41,15 @@ next number. feckless-libs, Avoidant, Spurious and Defeatist have the same
 arrangement (`u-feckless-NNNN`, `u-avoidant-NNNN`, ...). When the branch
 merges, its entries move into the series of the release it goes into.
 
-**On that branch the map's own manifest and lock stay on a tag.** What
-follows feckless-libs' `umode` branch is a project of its own under
-`m5tab5/` (`boxed/`), with its own `idf_component.yml` and
-`dependencies.lock`, so work on the box cannot move a pin that a release
-is built from.
+**On that branch there is one build, and it is the boxed one**
+(u-errant-0005). `idf.py build` in `m5tab5/` makes the map as an ELF for
+a box, `build/errant_map.app.elf`, and the .bin beside it, whose
+`standalone.c` is the whole of a launcher: it brings the board up and
+runs that ELF in a box. `main/idf_component.yml` pins feckless-libs' own
+`umode` branch (`u-feckless-NNNN`), not a tag, and the lock records its
+commit; Avoidant's `umode` branch (`u-avoidant-NNNN`) is the launcher
+that runs the same ELF. No second project, and no trusted build of the
+map on this branch.
 
 **Patches are cumulative.** Each applies on top of what is here. Never a
 rewritten copy of a file, never a corrected reissue of a patch already

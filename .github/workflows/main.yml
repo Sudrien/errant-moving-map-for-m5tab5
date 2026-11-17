@@ -17,14 +17,14 @@ on:
         required: true
         default: 'main'
         type: string
-      # The committed dependencies.lock was resolved under 5.5.5, so that
-      # is the default. 6.1 is offered because main/CMakeLists.txt has
-      # the 6.x cJSON path, but this repository has no IDF 6 lock: a 6.1
-      # run resolves its own.
+      # u-errant-0005: 6.1 is the default on the umode branch, which
+      # feckless-libs' umode branch (and feckless_umode) needs; 5.5.5 no
+      # longer builds here. The committed dependencies.lock predates the
+      # move and is re-resolved by the first build: commit what it writes.
       idf_version:
         description: 'ESP-IDF to build with'
         required: false
-        default: 'v5.5.5'
+        default: 'v6.1'
         type: choice
         options:
           - v5.5.5
@@ -91,7 +91,7 @@ jobs:
       - name: Install ESP-IDF
         uses: espressif/install-esp-idf-action@v1
         with:
-          version: ${{ github.event.inputs.idf_version || 'v5.5.5' }}
+          version: ${{ github.event.inputs.idf_version || 'v6.1' }}
           target: 'esp32p4'
 
       # The first configure also fetches the world tile (0020) and the
@@ -115,8 +115,9 @@ jobs:
           mv build/errant_moving_map_for_m5tab5.bin "build/errant_${NAME}_moving_map_for_m5tab5.bin"
           # 0043: the map alone, for a launcher (Avoidant) to run with no
           # install. The .bins already contain this ELF; what it may take
-          # from a launcher is feckless_abi's and its storage and network
-          # sections', at the tag in main/idf_component.yml.
+          # from a launcher is feckless_abi's and its box and storage
+          # sections' (u-errant-0005: it runs in a box), at the ref in
+          # main/idf_component.yml.
           cp build/elf/errant_map.app.elf "build/errant_${NAME}_moving_map_for_m5tab5.elf"
 
       # A signed record that these three files, by their SHA-256, were
@@ -147,7 +148,7 @@ jobs:
       - name: Archive the dependency lock
         uses: actions/upload-artifact@v4
         with:
-          name: dependencies.lock-${{ steps.ver.outputs.name }}-idf${{ github.event.inputs.idf_version || 'v5.5.5' }}
+          name: dependencies.lock-${{ steps.ver.outputs.name }}-idf${{ github.event.inputs.idf_version || 'v6.1' }}
           path: m5tab5/dependencies.lock
           if-no-files-found: ignore
 

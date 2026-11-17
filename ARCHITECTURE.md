@@ -1593,3 +1593,67 @@ Defeatist have it; the map's own defaults are not touched. An existing
 *Checked:* a clean configure of `boxed/` has no CMake warning and the
 option set; the `elf` target builds, 87 imports, all answered. Not on a
 board.
+
+### u-errant-0005 -- one build: the boxed ELF, and a .bin whose launcher boxes it
+
+`boxed/` goes. It was a second project, as Defeatist's is, so that the
+map's manifest could stay on a tag; what is wanted on this branch is
+Spurious's and Lothesome's shape instead -- **one build**. `idf.py build`
+in `m5tab5/` now makes
+
+    build/errant_map.app.elf                  the map, for a box
+    build/errant_moving_map_for_m5tab5.bin    a launcher that runs it in one
+
+and nothing else builds the map: there is no trusted ELF on this branch.
+
+- **`main/idf_component.yml`**: every feckless pin is feckless-libs'
+  `umode` branch (was v0.6.1); `feckless_box_libc`, `feckless_umode` and
+  `feckless_box_calls` added; ESP-IDF 6.1 or later. The committed
+  `dependencies.lock` predates this and is re-resolved by the first
+  build.
+- **`elf/CMakeLists.txt`**: `feckless_abi_box_elf()`, so the ELF carries
+  the box's part of libc and both checks run. `main/CMakeLists.txt`
+  copies the ELF from `build/elf/` to beside the .bin.
+- **`main/absent.c`**, moved from `boxed/main/`, and `errant.c`'s
+  `app_main()` requires the box, no longer the network section: the
+  `ERRANT_BOXED` switch is gone with the build that did not define it.
+- **`main/standalone.c` is the launcher, whole.** NVS, the bus, USB,
+  storage and the network as before; then the panel, gfx and touch, on
+  core 0, so the panel's interrupts are there (Lothesome's
+  u-lothesome-0004); then the box -- the largest free PSRAM block less
+  2 MB, at most 24 MB, a 64 KB stack -- `feckless_umode_load()` with
+  `feckless_box_calls_v1()`'s table, and `feckless_umode_app_run_on(app,
+  1)`. It no longer calls `feckless_abi_run()`, which refuses a boxed ELF.
+  The network is still started, though a box cannot ask for it yet.
+- **`sdkconfig.defaults`**: `CONFIG_BOOTLOADER_REGION_PROTECTION_ENABLE=n`,
+  which feckless_umode stops the configure without, and
+  `CONFIG_ESP_HTTPS_SERVER_ENABLE=y`, which a launcher of the network
+  section needs to link (u-errant-0004's warning, now this firmware's
+  own). **`rm sdkconfig`** once.
+- **The workflow** builds with ESP-IDF v6.1 by default; 5.5.5 no longer
+  builds this branch.
+- CLAUDE.md's paragraph on the branch says the above in place of what
+  u-errant-0001 wrote.
+
+*Checked:* a clean ESP-IDF 6.1.1 build of `m5tab5/` (`all`, as
+`idf.py build` runs), riscv32-esp-elf 15.2.0, against feckless-libs'
+umode branch at 7b9c5fe:
+
+    -- feckless_abi: 87 symbols, all in feckless_abi_v1 + feckless_abi_box_v1 + feckless_abi_storage_v2
+    -- feckless_box_libc: boxed, 87 imports, none of them in-app names, all answered by the box
+    errant_moving_map_for_m5tab5.bin binary size 0x1aa0a0 bytes. Smallest app partition is 0x300000 bytes. 0x155f60 bytes (45%) free.
+
+no warnings; `build/errant_map.app.elf` is byte for byte
+`build/elf/errant_map.app.elf`, 194740 bytes, with no privileged
+instruction (nine `fflags` accesses). The .bin holds the ELF, the box's
+calls and `feckless_umode_app_run_on`. Host tests pass. Built with the
+component manager off and the registry's components from GitHub
+(u-errant-0002's list); the world tile's host is not reachable from the
+session, so that build embeds an empty one.
+
+*Not checked:* a board; a build with the component manager, which writes
+the new lock; `idf.py merge-bin` and the workflow's run. What a board's
+log should show: `standalone: the map in a box of N KB` (N near 24576
+if the PSRAM is free), `=== Errant Moving Map ===`, `gnss: UART1 at
+38400 baud`, and `the launcher has not started the network` from
+absent.c; `standalone: the map ended: ...` only if it stops.

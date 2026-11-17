@@ -86,3 +86,15 @@ CONFIG_UAC_FREQ_NUM_MAX=8
 # server, the tile client and DNS share the launcher's.
 CONFIG_HTTPD_WS_SUPPORT=y
 CONFIG_LWIP_MAX_SOCKETS=16
+
+# u-errant-0005: the map runs in a box (feckless_umode, feckless-libs'
+# umode branch). ESP-IDF's region protection programs the PMP and locks
+# every entry, one giving user mode read and write over internal DRAM, so no
+# box could be granted; off, the PMP is left in its reset state and the box
+# is granted alone. feckless_umode stops the configure if this is on.
+# rm sdkconfig.
+CONFIG_BOOTLOADER_REGION_PROTECTION_ENABLE=n
+# u-errant-0005: this firmware is a launcher to feckless-libs' network
+# section, whose feckless_https_start() is httpd_ssl_start(): without this
+# the section warns at configure and the .bin does not link.
+CONFIG_ESP_HTTPS_SERVER_ENABLE=y

@@ -70,7 +70,10 @@ foreach(_c IN LISTS _comps)
         list(APPEND ELF_COMPONENTS "${_c}")
     endif()
 endforeach()
-feckless_abi_elf(errant_map)
+# u-errant-0005: for a box (feckless-libs' umode branch): the pure part of
+# libc linked into the ELF, and a check (boxcheck) that every import is one
+# a box answers.
+feckless_abi_box_elf(errant_map)
 
 # libversions.h, the licences page's list (0037): generated from the lock,
 # the BMI270 pin and the world tile's source -- after project(), which is

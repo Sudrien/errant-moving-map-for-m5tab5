@@ -10,6 +10,8 @@ if(NOT _errant_elf)
         SRCS "standalone.c"
         PRIV_REQUIRES feckless_abi feckless_abi_storage feckless_abi_network nvs_flash
                       feckless_drivers feckless_storage_handler
+                      feckless_graphics_handler   # u-errant-0005: the panel, up before the box
+                      feckless_umode feckless_box_calls esp_timer   # u-errant-0005: the box
     )
     if(NOT CMAKE_BUILD_EARLY_EXPANSION)
         include(ExternalProject)
@@ -37,6 +39,12 @@ if(NOT _errant_elf)
             BUILD_BYPRODUCTS "${_elf}"
             INSTALL_COMMAND ""
         )
+
+        # u-errant-0005: and a copy beside the .bin, build/errant_map.app.elf,
+        # which is the file a launcher is given.
+        add_custom_command(TARGET errant_elf POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different "${_elf}" "${_build_dir}/errant_map.app.elf"
+            VERBATIM)
 
         # elf/ checked it against the ABI as it linked it; embedding
         # waits for that.
@@ -110,10 +118,12 @@ idf_component_register(
     SRCS "errant.c" "gnss.c" "ffread.c" "maptile.c" "maplabel.c" "places.c" "motion.c" "handling.c" "imu.c" "trust.c" "wifiloc.c" "mapset.c" "mapview.c" "tilecache.c" "tilesrc.c" "netremote.c"
          "portal.c" "portalweb.c" "dnsreply.c" "wifijoin.c" "launcher_import.c" "launcherkey.c"
          "sun.c" "uirow.c" "waypoints.c" "worldtile.c" "lastfix.c" "area.c" "ubx.c" "aop.c"
+         "absent.c"                  # u-errant-0005: what a box does not answer
     INCLUDE_DIRS "."
     EMBED_FILES "${ERRANT_WORLD}" "${ERRANT_BMI270}"
     REQUIRES mapcore feckless_drivers feckless_graphics_handler feckless_storage_handler feckless_network_handler
              feckless_abi feckless_abi_storage feckless_abi_network   # 0043
+             feckless_box_libc           # u-errant-0005: linked into the ELF
              esp_driver_uart esp_driver_gpio esp_driver_i2c esp_timer fatfs esp_app_format esp_http_client mbedtls nvs_flash
              esp_http_server lwip app_update spi_flash ${ERRANT_JSON}
 )
