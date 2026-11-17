@@ -33,6 +33,10 @@ if(NOT _errant_elf)
                        -DSDKCONFIG=${_elf_dir}/sdkconfig
                        -DERRANT_HOST_SDKCONFIG=${_sdkconfig}
                        -DERRANT_PROJECT_VER=${_project_ver}
+                       # u-errant-0009: what CMake 4.5 passes by itself (policy
+                       # CMP0225), given here so it does not warn and every
+                       # CMake does the same. Nothing is installed.
+                       -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
             CMAKE_GENERATOR "Unix Makefiles"
             BUILD_COMMAND make elf
             BUILD_ALWAYS 1
